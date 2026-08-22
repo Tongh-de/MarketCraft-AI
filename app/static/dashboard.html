@@ -6,11 +6,12 @@
     <meta name="description" content="MarketCraft AI 跨境电商运营自动化控制台" />
     <title>MarketCraft AI · 运营控制台</title>
     <link rel="stylesheet" href="/static/dashboard.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="/dashboard" aria-label="MarketCraft AI 首页">
+        <a class="brand" href="/app" aria-label="MarketCraft AI 首页">
           <span class="brand-mark">M</span>
           <span>
             <strong>MarketCraft</strong>
@@ -20,11 +21,11 @@
 
         <nav class="nav" aria-label="主导航">
           <a class="nav-item active" href="#overview"><span>01</span>运营总览</a>
-          <a class="nav-item" href="/studio"><span>02</span>AI 商品创作</a>
-          <a class="nav-item" href="/competitors"><span>03</span>竞品视觉分析</a>
-          <a class="nav-item" href="/poster-editor"><span>04</span>AI 海报工作台</a>
-          <a class="nav-item" href="/listing-workbench"><span>05</span>多平台上架</a>
-          <a class="nav-item" href="/performance-insights"><span>06</span>经营优化中心</a>
+          <a class="nav-item" href="/app#studio"><span>02</span>AI 商品创作</a>
+          <a class="nav-item" href="/app#competitors"><span>03</span>竞品视觉分析</a>
+          <a class="nav-item" href="/app#poster"><span>04</span>AI 海报工作台</a>
+          <a class="nav-item" href="/app#listing"><span>05</span>多平台上架</a>
+          <a class="nav-item" href="/app#performance"><span>06</span>经营优化中心</a>
           <a class="nav-item" href="#runs"><span>07</span>订单履约</a>
           <a class="nav-item" href="#new-operation"><span>08</span>新建任务</a>
           <a class="nav-item" href="/docs" target="_blank"><span>09</span>API 文档</a>
@@ -187,6 +188,7 @@
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
     <script src="/static/dashboard.js" defer></script>
   </body>
 </html>

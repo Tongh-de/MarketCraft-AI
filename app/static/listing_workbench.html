@@ -7,18 +7,19 @@
     <title>MarketCraft AI · 多平台上架工作台</title>
     <link rel="stylesheet" href="/static/studio.css" />
     <link rel="stylesheet" href="/static/listing_workbench.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>LISTING AGENT</small></span></a>
+        <a class="brand" href="/app"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>LISTING AGENT</small></span></a>
         <nav class="nav" aria-label="主导航">
-          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
-          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
-          <a class="nav-item" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
-          <a class="nav-item active" href="/listing-workbench"><span>⇧</span>多平台上架</a>
-          <a class="nav-item" href="/performance-insights"><span>⌁</span>经营优化中心</a>
-          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/app#studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="/app#competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item" href="/app#poster"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item active" href="/app#listing"><span>⇧</span>多平台上架</a>
+          <a class="nav-item" href="/app#performance"><span>⌁</span>经营优化中心</a>
+          <a class="nav-item" href="/app#operations"><span>↗</span>运营控制台</a>
           <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
         </nav>
         <div class="environment-card"><div class="eyebrow light">PUBLISHING GATE</div><strong><i class="pulse"></i>Mock 平台连接</strong><p>所有外部写操作先人工复核，发布结果带平台、幂等键与完整审计记录。</p></div>
@@ -93,6 +94,7 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
     <script src="/static/listing_workbench.js" defer></script>
   </body>
 </html>

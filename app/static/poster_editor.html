@@ -7,19 +7,20 @@
     <title>MarketCraft AI · AI 海报工作台</title>
     <link rel="stylesheet" href="/static/studio.css" />
     <link rel="stylesheet" href="/static/poster_editor.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>POSTER STUDIO</small></span></a>
+        <a class="brand" href="/app"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>POSTER STUDIO</small></span></a>
         <nav class="nav" aria-label="主导航">
-          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
-          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
-          <a class="nav-item active" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
-          <a class="nav-item" href="/listing-workbench"><span>⇧</span>多平台上架</a>
-          <a class="nav-item" href="/performance-insights"><span>⌁</span>经营优化中心</a>
+          <a class="nav-item" href="/app#studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="/app#competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item active" href="/app#poster"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item" href="/app#listing"><span>⇧</span>多平台上架</a>
+          <a class="nav-item" href="/app#performance"><span>⌁</span>经营优化中心</a>
           <a class="nav-item" href="#canvas"><span>◇</span>可编辑画布</a>
-          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/app#operations"><span>↗</span>运营控制台</a>
           <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
         </nav>
         <div class="environment-card"><div class="eyebrow light">POSTER ENGINE</div><strong><i class="pulse"></i>Mock 背景生成</strong><p>商品、文字、价格和按钮均保留为可编辑图层。</p></div>
@@ -81,6 +82,7 @@
     </div>
     <canvas id="exportCanvas" hidden></canvas>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
     <script src="/static/poster_editor.js" defer></script>
   </body>
 </html>

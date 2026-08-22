@@ -1,0 +1,5 @@
+body.embed-mode .sidebar { display: none !important; }
+body.embed-mode .main-content { width: 100% !important; margin-left: 0 !important; padding: 26px clamp(18px,3vw,42px) 52px !important; }
+body.embed-mode .app-shell { min-height: auto !important; }
+body.embed-mode .toast { position: fixed !important; }
+@media(max-width:820px){body.embed-mode .main-content{padding:18px 12px 38px!important}}

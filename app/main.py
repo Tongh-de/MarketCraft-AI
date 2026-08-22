@@ -11,6 +11,7 @@ from app.api.v1.knowledge import router as knowledge_router
 from app.api.v1.listings import router as listings_router
 from app.api.v1.operations import router as operations_router
 from app.api.v1.performance import router as performance_router
+from app.api.v1.platform_extensions import router as platform_extensions_router
 from app.api.v1.poster_projects import router as poster_projects_router
 from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
@@ -23,7 +24,7 @@ upload_dir = Path(settings.upload_dir).resolve()
 upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.9.0",
+    version="0.10.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -34,6 +35,7 @@ app.include_router(knowledge_router, prefix="/api/v1")
 app.include_router(listings_router, prefix="/api/v1")
 app.include_router(operations_router, prefix="/api/v1")
 app.include_router(performance_router, prefix="/api/v1")
+app.include_router(platform_extensions_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
 app.include_router(poster_projects_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
@@ -42,7 +44,12 @@ app.middleware("http")(prometheus_middleware)
 
 @app.get("/", include_in_schema=False)
 def root() -> RedirectResponse:
-    return RedirectResponse(url="/dashboard")
+    return RedirectResponse(url="/app")
+
+
+@app.get("/app", include_in_schema=False)
+def unified_app() -> FileResponse:
+    return FileResponse(static_dir / "app_shell.html")
 
 
 @app.get("/dashboard", include_in_schema=False)

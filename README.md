@@ -4,7 +4,13 @@
 
 当前版本已完成原有七个阶段，并持续建设 AI 商品创作闭环：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供 Skill/Plugin 注册体系、商品图片上传、竞品视觉分析、可编辑海报、多平台商品上架，以及曝光、点击、转化、广告、退货和库存数据回流分析。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
 
+用户侧统一从 `/app` 进入产品。商品创作、竞品、海报、上架、经营分析、订单库存、Skill 插件和外部服务都在同一个产品外壳中切换；原独立页面仅作为内部模块和兼容地址保留。
+
 ## Product preview
+
+### 统一产品入口
+
+![MarketCraft AI 统一工作台](docs/assets/unified-app-preview.svg)
 
 | 运营总览 | 四眼审批 |
 | --- | --- |
@@ -93,6 +99,13 @@ flowchart LR
 - 电商经营优化 Skill，输出平台对比、数字证据、优先级和可执行实验建议
 - 只读分析边界：Agent 不直接改图、改价、调广告或补货，后续写操作仍需人工审核
 - Mock 平台数据连接器及数据质量提示，不将演示指标描述为真实经营业绩
+- 统一 `/app` 产品入口，通过同一侧边栏切换全部电商业务模块
+- 对话任务入口把自然语言拆成模块执行计划，默认停在外部写操作之前
+- 可编辑 Skill 插件清单：创建、手动编辑、自动修订、版本递增、启用与停用
+- Skill 自动修订后回到 Draft（草稿），重新启用后才能进入调用计划
+- 外部服务中心统一管理 Base URL、能力、模式、鉴权方式和密钥引用
+- 内置 ComfyUI、即梦 AI、Amazon、TikTok Shop、Shopify、ERP 和飞书 Mock 连接器
+- Live 连接器未真实联调时保持 Pending Configuration，不虚构连接成功
 
 ## Quick start
 
@@ -104,7 +117,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，打开 `http://localhost:8000/listing-workbench` 生成、审核并模拟发布多平台商品，打开 `http://localhost:8000/performance-insights` 查看经营数据与 AI 优化建议，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档。
+打开 `http://localhost:8000/app` 进入统一产品工作台。全部专业模块、Skill 插件和外部服务均从该入口访问；`http://localhost:8000/docs` 提供接口文档。
 
 控制台右侧表单可以一键完成：
 
@@ -208,6 +221,22 @@ docker compose up --build
 
 `GET /api/v1/performance/reports/{id}`：查询分析报告、平台对比、数据质量提示和执行轨迹。
 
+`GET /api/v1/platform/skill-plugins`：查询内置与自定义 Skill 插件清单。
+
+`POST /api/v1/platform/skill-plugins`：创建可编辑的自定义 Skill 草稿。
+
+`POST /api/v1/platform/skill-plugins/{id}/auto-edit`：根据修改要求生成新版本并回到草稿态。
+
+`POST /api/v1/platform/skill-plugins/{id}/status`：显式启用或停用自定义 Skill。
+
+`POST /api/v1/platform/skill-plugins/{id}/invoke`：解析已启用 Skill 的能力和工具绑定，生成安全调用计划。
+
+`GET /api/v1/platform/external-services`：查询外部服务适配器、能力与连接状态。
+
+`POST /api/v1/platform/external-services`：注册 Mock 或 Live 外部接口配置，仅保存密钥引用。
+
+`POST /api/v1/platform/external-services/{id}/health`：检查 Mock 可用性或返回 Live 待联调边界。
+
 真实模型模式：
 
 ```bash
@@ -259,6 +288,7 @@ REDIS_URL=redis://redis:6379/0
 | 7 ✅ | 电商运营管理控制台 | 可视化演示、业务状态与执行轨迹 |
 | 8 ✅ | AI 商品素材、竞品分析、海报与多平台上架 | 多模态生成、插件架构、四眼审批与商品一致性 |
 | 9 ✅ | 经营数据回流与 AI 优化建议 | 指标体系、跨平台分析、证据驱动建议与安全边界 |
+| 10 ✅ | 统一产品外壳、Skill 插件与外部服务中心 | 单入口产品、插件生命周期、适配器边界与安全调用计划 |
 
 ## Engineering decisions
 
@@ -270,7 +300,7 @@ REDIS_URL=redis://redis:6379/0
 
 ## Verification boundary
 
-- 已在无外部服务模式验证：43 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、经营指标分析、Dashboard 页面和静态资源、Prometheus 指标端点。
+- 已在无外部服务模式验证：48 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、经营指标分析、Skill 生命周期、外部服务边界、统一工作台页面和 Prometheus 指标端点。
 - 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
 - 已实现但未在本环境联调：PostgreSQL、Redis、Amazon/TikTok Shop/ERP/飞书真实接口，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
 - Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。

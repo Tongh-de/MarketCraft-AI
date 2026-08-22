@@ -6,24 +6,25 @@
     <meta name="description" content="MarketCraft AI 商品素材创作工作台" />
     <title>MarketCraft AI · AI 商品创作台</title>
     <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
   </head>
   <body>
     <div class="app-shell">
       <aside class="sidebar">
-        <a class="brand" href="/studio">
+        <a class="brand" href="/app">
           <span class="brand-mark">M</span>
           <span><strong>MarketCraft</strong><small>AI CREATIVE</small></span>
         </a>
         <nav class="nav" aria-label="主导航">
-          <a class="nav-item active" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item active" href="/app#studio"><span>✦</span>AI 创作台</a>
           <a class="nav-item" href="#results"><span>▧</span>商品素材</a>
           <a class="nav-item" href="#skill"><span>◇</span>Skill 中心</a>
           <a class="nav-item" href="#plugins"><span>⌘</span>插件中心</a>
-          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
-          <a class="nav-item" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
-          <a class="nav-item" href="/listing-workbench"><span>⇧</span>多平台上架</a>
-          <a class="nav-item" href="/performance-insights"><span>⌁</span>经营优化中心</a>
-          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/app#competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item" href="/app#poster"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item" href="/app#listing"><span>⇧</span>多平台上架</a>
+          <a class="nav-item" href="/app#performance"><span>⌁</span>经营优化中心</a>
+          <a class="nav-item" href="/app#operations"><span>↗</span>运营控制台</a>
           <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
         </nav>
         <div class="environment-card">
@@ -143,6 +144,7 @@
       </main>
     </div>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
     <script src="/static/studio.js" defer></script>
   </body>
 </html>
