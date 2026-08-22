@@ -54,6 +54,15 @@ class QualityIssue(BaseModel):
     message: str
 
 
+class VisualAnalysis(BaseModel):
+    scene_summary: str
+    detected_elements: list[str] = Field(default_factory=list)
+    visual_strengths: list[str] = Field(default_factory=list)
+    visual_risks: list[str] = Field(default_factory=list)
+    recommended_layout: str
+    confidence: float = Field(ge=0, le=1)
+
+
 class PlatformCopy(BaseModel):
     platform: Platform
     title: str
@@ -67,6 +76,7 @@ class CampaignPackage(BaseModel):
     product_sku: str
     selling_points: list[str]
     brand_context: list[str]
+    visual_analysis: VisualAnalysis
     copies: list[PlatformCopy]
     poster_prompt: str
     quality_score: int = Field(ge=0, le=100)
@@ -74,3 +84,16 @@ class CampaignPackage(BaseModel):
     status: str
     trace: list[str]
 
+
+class PosterRequest(BaseModel):
+    prompt: str = Field(min_length=10, max_length=32000)
+    size: str = Field(default="1024x1024", pattern=r"^\d{2,4}x\d{2,4}$")
+    quality: str = Field(default="medium", pattern=r"^(low|medium|high|auto)$")
+
+
+class PosterResponse(BaseModel):
+    status: str
+    model: str
+    mime_type: str = "image/png"
+    image_base64: str | None = None
+    revised_prompt: str | None = None

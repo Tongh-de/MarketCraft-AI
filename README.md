@@ -2,7 +2,7 @@
 
 面向电商运营团队的多模态营销内容生产 Agent 平台。系统接收商品资料和图片，自动提取卖点、检索品牌规范、生成多平台文案与海报提示词，并通过质量审核节点输出可追溯的营销内容包。
 
-当前版本为 Phase 1 MVP：核心后端链路已实现，默认使用 Mock（模拟）生成器，无需模型密钥即可演示。项目不是一个单独的“调用大模型接口”Demo，而是把确定性规则、品牌约束、生成模型和人工审核组织为可扩展工作流。
+当前版本已完成 Phase 2：除核心工作流外，还支持真实大模型结构化生成、商品图片理解和营销海报生成。默认使用 Mock（模拟）模式，无需模型密钥即可演示；切换 `GENERATION_MODE=openai` 后可调用真实模型。
 
 ## Core workflow
 
@@ -24,6 +24,9 @@ flowchart LR
 - 禁用词、绝对化表述、标题长度和可读性检查
 - 完整节点执行轨迹，方便评测、排错和面试演示
 - Mock 模式、自动化测试、Docker 镜像与健康检查
+- 多模态商品图片分析，输出视觉优势、风险、布局建议和置信度
+- OpenAI Responses API + Pydantic Structured Outputs（结构化输出）
+- 独立海报生成接口，可接收 GPT Image 返回的 Base64 PNG
 
 ## Quick start
 
@@ -60,6 +63,19 @@ docker compose up --build
 - 可交给图像模型的海报 Prompt（提示词）
 - 质量分数、风险项、审核状态和节点轨迹
 
+`POST /api/v1/posters/generate`
+
+接收工作流生成的海报 Prompt，并返回图片生成状态、模型、MIME 类型和 Base64 图片数据。Mock 模式仅返回可验证的占位响应，不产生调用费用。
+
+真实模型模式：
+
+```bash
+GENERATION_MODE=openai
+OPENAI_API_KEY=your-key
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_IMAGE_MODEL=gpt-image-2
+```
+
 完整请求示例见 [examples.http](examples.http)。
 
 ## Delivery roadmap
@@ -67,7 +83,7 @@ docker compose up --build
 | Phase | Deliverable | Interview value |
 | --- | --- | --- |
 | 1 | 商品输入 → 文案 → 海报 Prompt → 质检 | FastAPI、LangGraph、结构化输出、异常与质量控制 |
-| 2 | 商品图片理解、真实 LLM、海报生成 | 多模态模型、Prompt 工程、供应商抽象 |
+| 2 ✅ | 商品图片理解、真实 LLM、海报生成 | 多模态模型、结构化输出、供应商抽象 |
 | 3 | 品牌 RAG、商品库、混合召回 | Milvus、BM25、Rerank、引用溯源 |
 | 4 | 人工审核、版本管理、多平台发布 | Human-in-the-loop、权限、幂等与审计 |
 | 5 | 评测、监控、Redis/PostgreSQL、部署 | 生产评测、可观测性、可靠性与工程化 |
@@ -80,4 +96,3 @@ docker compose up --build
 - 第一阶段用内存 Checkpointer 降低启动成本，生产版迁移至 Redis/PostgreSQL。
 
 更完整的设计见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
-

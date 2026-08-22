@@ -5,7 +5,6 @@ from fastapi import APIRouter, Header
 from app.domain.models import CampaignPackage, CampaignRequest
 from app.workflows.campaign import run_campaign
 
-
 router = APIRouter(prefix="/campaigns", tags=["campaigns"])
 
 

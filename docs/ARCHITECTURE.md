@@ -30,8 +30,7 @@ flowchart TD
 
 ## Production evolution
 
-Phase 2 replaces the mock provider with an LLM and adds vision model input plus poster generation.
+Phase 2 adds a production LLM provider, structured visual analysis and a dedicated poster generator while preserving keyless Mock mode.
 Phase 3 replaces local brand lookup with hybrid retrieval over PostgreSQL, Milvus and BM25.
 Phase 4 adds human approval, content versioning and publishing adapters.
 Phase 5 adds evaluation datasets, tracing, monitoring, Redis persistence and deployment hardening.
-

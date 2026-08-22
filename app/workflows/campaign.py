@@ -3,14 +3,22 @@ from typing import NotRequired, TypedDict
 from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 
-from app.domain.models import CampaignPackage, CampaignRequest, PlatformCopy, QualityIssue
+from app.domain.models import (
+    CampaignPackage,
+    CampaignRequest,
+    PlatformCopy,
+    QualityIssue,
+    VisualAnalysis,
+)
 from app.services.brand_repository import BrandRepository
 from app.services.generator import ContentGenerator, get_generator
 from app.services.quality import QualityService
+from app.services.vision import VisionAnalyzer, get_vision_analyzer
 
 
 class CampaignState(TypedDict):
     request: CampaignRequest
+    visual_analysis: NotRequired[VisualAnalysis]
     selling_points: NotRequired[list[str]]
     brand_context: NotRequired[list[str]]
     copies: NotRequired[list[PlatformCopy]]
@@ -25,15 +33,23 @@ def build_campaign_graph(
     generator: ContentGenerator | None = None,
     brand_repository: BrandRepository | None = None,
     quality_service: QualityService | None = None,
+    vision_analyzer: VisionAnalyzer | None = None,
 ):
     generator = generator or get_generator()
     brand_repository = brand_repository or BrandRepository()
     quality_service = quality_service or QualityService()
+    vision_analyzer = vision_analyzer or get_vision_analyzer()
+
+    def analyze_product_visuals(state: CampaignState) -> dict:
+        return {
+            "visual_analysis": vision_analyzer.analyze(state["request"]),
+            "trace": ["analyze_product_visuals"],
+        }
 
     def extract_selling_points(state: CampaignState) -> dict:
         return {
             "selling_points": generator.extract_selling_points(state["request"]),
-            "trace": ["extract_selling_points"],
+            "trace": [*state.get("trace", []), "extract_selling_points"],
         }
 
     def retrieve_brand_context(state: CampaignState) -> dict:
@@ -72,6 +88,7 @@ def build_campaign_graph(
             product_sku=request.product.sku,
             selling_points=state["selling_points"],
             brand_context=state["brand_context"],
+            visual_analysis=state["visual_analysis"],
             copies=state["copies"],
             poster_prompt=state["poster_prompt"],
             quality_score=score,
@@ -82,12 +99,14 @@ def build_campaign_graph(
         return {"result": result, "trace": trace}
 
     builder = StateGraph(CampaignState)
+    builder.add_node("analyze_product_visuals", analyze_product_visuals)
     builder.add_node("extract_selling_points", extract_selling_points)
     builder.add_node("retrieve_brand_context", retrieve_brand_context)
     builder.add_node("generate_content", generate_content)
     builder.add_node("quality_review", quality_review)
     builder.add_node("package_result", package_result)
-    builder.add_edge(START, "extract_selling_points")
+    builder.add_edge(START, "analyze_product_visuals")
+    builder.add_edge("analyze_product_visuals", "extract_selling_points")
     builder.add_edge("extract_selling_points", "retrieve_brand_context")
     builder.add_edge("retrieve_brand_context", "generate_content")
     builder.add_edge("generate_content", "quality_review")
@@ -105,4 +124,3 @@ def run_campaign(request: CampaignRequest, thread_id: str) -> CampaignPackage:
         {"configurable": {"thread_id": thread_id}},
     )
     return output["result"]
-

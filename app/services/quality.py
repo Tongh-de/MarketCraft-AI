@@ -2,7 +2,6 @@ import re
 
 from app.domain.models import CampaignRequest, PlatformCopy, QualityIssue
 
-
 ABSOLUTE_CLAIMS = ("第一", "最好", "顶级", "百分百", "永久", "绝对")
 
 

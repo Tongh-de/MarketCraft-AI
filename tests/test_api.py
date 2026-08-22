@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 
 from app.main import app
 
-
 client = TestClient(app)
 
 
@@ -34,5 +33,19 @@ def test_generate_campaign_endpoint() -> None:
     assert result["status"] == "approved"
     assert result["quality_score"] == 100
     assert len(result["copies"]) == 2
+    assert result["visual_analysis"]["confidence"] == 0.35
     assert result["trace"][-1] == "package_result"
 
+
+def test_mock_poster_endpoint_is_keyless() -> None:
+    response = client.post(
+        "/api/v1/posters/generate",
+        json={
+            "prompt": "干净的电商保温杯商品海报，居中构图并保留标题安全区。",
+            "size": "1024x1024",
+            "quality": "medium",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["status"] == "mock"
+    assert response.json()["image_base64"] is None

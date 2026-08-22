@@ -12,6 +12,8 @@ class Settings(BaseSettings):
     openai_api_key: str | None = None
     openai_base_url: str | None = None
     openai_model: str = "gpt-4.1-mini"
+    openai_image_model: str = "gpt-image-2"
+    openai_timeout_seconds: float = 60
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
@@ -19,4 +21,3 @@ class Settings(BaseSettings):
 @lru_cache
 def get_settings() -> Settings:
     return Settings()
-
