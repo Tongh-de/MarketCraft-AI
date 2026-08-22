@@ -60,6 +60,19 @@ def test_editable_poster_studio_is_served() -> None:
     assert script.status_code == 200
 
 
+def test_multi_platform_listing_workbench_is_served() -> None:
+    page = client.get("/listing-workbench")
+    stylesheet = client.get("/static/listing_workbench.css")
+    script = client.get("/static/listing_workbench.js")
+
+    assert page.status_code == 200
+    assert "多平台商品上架工作台" in page.text
+    assert "审核人与内容提交人必须不同" in page.text
+    assert "平台适配器 MOCK" in page.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")

@@ -53,6 +53,7 @@ def test_skill_and_plugin_catalogs_are_visible() -> None:
         "product-asset-generation",
         "competitor-visual-analysis",
         "poster-design",
+        "product-listing-package",
     }
 
 

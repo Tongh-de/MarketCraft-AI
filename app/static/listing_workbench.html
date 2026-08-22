@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 多平台商品上架工作台" />
+    <title>MarketCraft AI · 多平台上架工作台</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/listing_workbench.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>LISTING AGENT</small></span></a>
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item active" href="/listing-workbench"><span>⇧</span>多平台上架</a>
+          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
+        </nav>
+        <div class="environment-card"><div class="eyebrow light">PUBLISHING GATE</div><strong><i class="pulse"></i>Mock 平台连接</strong><p>所有外部写操作先人工复核，发布结果带平台、幂等键与完整审计记录。</p></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div><div class="eyebrow">MULTI-CHANNEL LISTING ORCHESTRATION</div><h1>多平台商品上架工作台</h1><p>把 AI 商品图、模特图、海报和商品资料转换为各平台草稿，经人工审核后幂等发布。</p></div>
+          <div class="live-badges"><span id="packageBadge">等待生成</span><span><i class="pulse"></i>平台适配器 MOCK</span></div>
+        </header>
+
+        <ol class="listing-stepper" id="listingStepper">
+          <li class="active" data-stage="draft"><b>1</b><span>生成上架包<small>素材与字段映射</small></span></li>
+          <li data-stage="pending_review"><b>2</b><span>提交审核<small>冻结当前草稿</small></span></li>
+          <li data-stage="approved"><b>3</b><span>四眼批准<small>审核人必须不同</small></span></li>
+          <li data-stage="published"><b>4</b><span>幂等发布<small>写入三个平台</small></span></li>
+        </ol>
+
+        <section class="listing-layout">
+          <article class="panel listing-form-panel">
+            <div class="panel-heading"><div><div class="eyebrow">PRODUCT SOURCE</div><h2>创建上架包</h2></div><span class="mode-chip">AI SKILL</span></div>
+            <form id="listingForm">
+              <label><span>已完成的商品创作任务</span><select name="creationTask" id="creationTask" required><option value="">正在载入…</option></select></label>
+              <label><span>可编辑海报（可选）</span><select name="posterProject" id="posterProject"><option value="">不附加海报</option></select></label>
+              <div class="source-hint" id="sourceHint">请先在 AI 创作台生成多角度商品素材。</div>
+              <div class="form-row"><label><span>商品名称</span><input name="name" required /></label><label><span>SKU</span><input name="sku" required /></label></div>
+              <label><span>商品品类</span><input name="category" required /></label>
+              <label><span>商品描述</span><textarea name="description" required minlength="10"></textarea></label>
+              <div class="form-row"><label><span>价格</span><input name="price" type="number" min="0.01" step="0.01" value="69.00" required /></label><label><span>币种</span><select name="currency"><option>USD</option><option>CNY</option><option>EUR</option><option>JPY</option></select></label></div>
+              <label><span>可售库存</span><input name="inventory" type="number" min="0" step="1" value="120" required /></label>
+              <fieldset><legend>商品属性</legend><div class="form-row"><label><span>材质</span><input name="material" value="轻量防泼水面料" /></label><label><span>颜色</span><input name="color" value="燕麦米" /></label></div></fieldset>
+              <fieldset><legend>目标平台</legend><div class="platform-options"><label><input name="platform" type="checkbox" value="amazon" checked /><span class="platform-logo amazon">a</span>Amazon</label><label><input name="platform" type="checkbox" value="tiktok_shop" checked /><span class="platform-logo tiktok">♪</span>TikTok Shop</label><label><input name="platform" type="checkbox" value="shopify" checked /><span class="platform-logo shopify">S</span>Shopify</label></div></fieldset>
+              <button class="button primary full" id="generatePackage" type="submit">✦ 生成多平台上架包</button>
+            </form>
+          </article>
+
+          <section class="result-column">
+            <article class="panel package-panel" id="packageResult">
+              <div class="panel-heading"><div><div class="eyebrow">LISTING PACKAGE</div><h2>平台草稿与素材</h2></div><span class="status-chip" id="statusChip">DRAFT</span></div>
+              <div class="package-empty" id="packageEmpty"><span>⇧</span><h3>等待商品资料</h3><p>选择一个已经完成的创作任务。系统会读取其商品图、模特试穿图和可选海报，并生成 Amazon、TikTok Shop 与 Shopify 草稿。</p></div>
+              <div id="packageContent" hidden>
+                <div class="package-summary" id="packageSummary"></div>
+                <div class="asset-strip" id="listingAssets"></div>
+                <div class="platform-tabs" id="platformTabs"></div>
+                <div class="platform-drafts" id="platformDrafts"></div>
+              </div>
+            </article>
+
+            <article class="panel recent-panel">
+              <div class="panel-heading compact"><div><div class="eyebrow">RECENT PACKAGES</div><h2>最近上架包</h2></div><button class="button ghost compact-button" id="refreshPackages" type="button">刷新</button></div>
+              <div class="recent-packages" id="recentPackages"><p class="muted">暂无上架包。</p></div>
+            </article>
+          </section>
+
+          <aside class="right-rail listing-rail">
+            <article class="panel approval-panel">
+              <div class="panel-heading compact"><div><div class="eyebrow">HUMAN-IN-THE-LOOP</div><h2>审核与发布</h2></div></div>
+              <div class="approval-body">
+                <div class="risk-banner"><strong>发布会写入外部平台</strong><p>审核人与内容提交人必须不同；相同幂等键重复请求不会重复上架。</p></div>
+                <div class="actor-grid"><label><span>提交人</span><input id="submitter" value="listing-operator" /></label><label><span>审核人</span><input id="reviewer" value="reviewer-b" /></label><label><span>发布人</span><input id="publisher" value="publisher-c" /></label></div>
+                <div class="workflow-actions"><button class="button primary full" id="submitReview" type="button" disabled>提交人工审核</button><div class="decision-row"><button class="button approve" id="approvePackage" type="button" disabled>批准上架</button><button class="button reject" id="rejectPackage" type="button" disabled>驳回</button></div><button class="button publish full" id="publishPackage" type="button" disabled>⇧ 发布到所选平台</button></div>
+                <div class="publication-results" id="publicationResults"></div>
+              </div>
+            </article>
+
+            <article class="panel trace-panel">
+              <div class="eyebrow">EXECUTION TRACE</div><h2>Agent 执行轨迹</h2>
+              <ol id="listingTrace"><li class="muted">等待生成上架包</li></ol>
+            </article>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/listing_workbench.js" defer></script>
+  </body>
+</html>

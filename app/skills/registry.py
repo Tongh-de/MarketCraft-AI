@@ -5,6 +5,7 @@ from app.skills.base import EcommerceSkill, SkillNotFoundError
 from app.skills.competitor_analysis import CompetitorVisualAnalysisSkill
 from app.skills.poster_design import PosterDesignSkill
 from app.skills.product_assets import ProductAssetGenerationSkill
+from app.skills.product_listing import ProductListingPackageSkill
 
 
 class SkillRegistry:
@@ -13,6 +14,7 @@ class SkillRegistry:
             ProductAssetGenerationSkill(),
             CompetitorVisualAnalysisSkill(),
             PosterDesignSkill(),
+            ProductListingPackageSkill(),
         ]
         self._skills = {skill.descriptor.skill_id: skill for skill in installed}
 

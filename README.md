@@ -2,7 +2,7 @@
 
 面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型、商品图片上传、AI 创作台、竞品视觉分析和可编辑海报工作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
+当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型、商品图片上传、AI 创作台、竞品视觉分析、可编辑海报工作台和多平台商品上架工作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
 
 ## Product preview
 
@@ -11,6 +11,10 @@
 | ![运营控制台总览](docs/assets/dashboard-preview.svg) | ![订单人工审批](docs/assets/approval-preview.svg) |
 | **库存异常与补货** | **执行结果与审计** |
 | ![库存不足与补货决策](docs/assets/restock-preview.svg) | ![外部系统执行结果](docs/assets/execution-preview.svg) |
+
+### AI 商品创作与上架
+
+![多平台商品上架工作台](docs/assets/listing-workbench-preview.svg)
 
 ## Core workflow
 
@@ -76,6 +80,10 @@ flowchart LR
 - AI 海报设计 Skill，支持平台尺寸、风格、品牌颜色和插件选择
 - 可编辑商品、标题、副标题、价格、按钮、位置与缩放图层
 - 海报项目版本管理，以及服务端 SVG 和浏览器端 PNG 导出
+- 商品智能上架 Skill，将商品图、模特图、海报、文案、价格和库存组装为上架包
+- Amazon、TikTok Shop、Shopify 三套字段与素材规则映射
+- 上架包 Draft → Pending Review → Approved/Rejected → Published 状态机
+- 发布前四眼审核、发布幂等键、平台级 Mock 外部 ID 和完整审计轨迹
 
 ## Quick start
 
@@ -87,7 +95,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
+打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，打开 `http://localhost:8000/listing-workbench` 生成、审核并模拟发布多平台商品，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
 
 控制台右侧表单可以一键完成：
 
@@ -175,6 +183,14 @@ docker compose up --build
 
 `GET /api/v1/poster-projects/{id}/preview.svg`：预览或下载服务端渲染的 SVG 海报。
 
+`POST /api/v1/listing-packages`：组合已完成的创作任务、可选海报和商品资料，生成多平台上架草稿。
+
+`POST /api/v1/listing-packages/{id}/submit-review`：冻结草稿并提交人工审核。
+
+`POST /api/v1/listing-packages/{id}/decision`：由不同审核人批准或驳回上架包。
+
+`POST /api/v1/listing-packages/{id}/publish`：使用幂等键向 Amazon、TikTok Shop 和 Shopify 适配器发布已批准草稿。
+
 真实模型模式：
 
 ```bash
@@ -224,7 +240,7 @@ REDIS_URL=redis://redis:6379/0
 | 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
 | 6 ✅ | 订单、库存、履约、补货与飞书审批 | 跨系统 Agent、Human-in-the-loop、业务闭环 |
 | 7 ✅ | 电商运营管理控制台 | 可视化演示、业务状态与执行轨迹 |
-| 8 🚧 | AI 商品素材、Skill 中心与创作插件 | 多模态生成、插件架构、异步任务与商品一致性 |
+| 8 🚧 | AI 商品素材、竞品分析、海报与多平台上架 | 多模态生成、插件架构、四眼审批与商品一致性 |
 
 ## Engineering decisions
 
