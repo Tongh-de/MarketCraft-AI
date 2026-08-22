@@ -6,6 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.api.v1.campaigns import router as campaigns_router
+from app.api.v1.creation import router as creation_router
 from app.api.v1.knowledge import router as knowledge_router
 from app.api.v1.operations import router as operations_router
 from app.api.v1.posters import router as posters_router
@@ -17,11 +18,12 @@ settings = get_settings()
 static_dir = Path(__file__).parent / "static"
 app = FastAPI(
     title=settings.app_name,
-    version="0.3.0",
+    version="0.4.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
 app.include_router(campaigns_router, prefix="/api/v1")
+app.include_router(creation_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
 app.include_router(operations_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
