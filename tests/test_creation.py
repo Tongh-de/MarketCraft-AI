@@ -54,6 +54,7 @@ def test_skill_and_plugin_catalogs_are_visible() -> None:
         "competitor-visual-analysis",
         "poster-design",
         "product-listing-package",
+        "commerce-performance-optimization",
     }
 
 

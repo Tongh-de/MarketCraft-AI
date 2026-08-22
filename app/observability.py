@@ -38,6 +38,16 @@ LISTING_PUBLICATIONS = Counter(
     "Per-platform product listing publication outcomes",
     ["platform", "status"],
 )
+PERFORMANCE_SNAPSHOTS = Counter(
+    "marketcraft_performance_snapshots_total",
+    "Commerce performance snapshots received",
+    ["platform", "source"],
+)
+PERFORMANCE_ANALYSES = Counter(
+    "marketcraft_performance_analyses_total",
+    "Commerce performance analysis outcomes",
+    ["status", "mock"],
+)
 
 
 async def prometheus_middleware(request: Request, call_next) -> Response:

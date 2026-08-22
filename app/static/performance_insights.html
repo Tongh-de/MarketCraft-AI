@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 经营数据回流与优化建议工作台" />
+    <title>MarketCraft AI · 经营优化中心</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/performance_insights.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>GROWTH INTELLIGENCE</small></span></a>
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item" href="/listing-workbench"><span>⇧</span>多平台上架</a>
+          <a class="nav-item active" href="/performance-insights"><span>⌁</span>经营优化中心</a>
+          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
+        </nav>
+        <div class="environment-card"><div class="eyebrow light">DATA BOUNDARY</div><strong><i class="pulse"></i>Mock 数据连接器</strong><p>当前指标仅用于验证分析链路，不代表真实平台表现或生产收益。</p></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar insight-topbar">
+          <div><div class="eyebrow">CLOSED-LOOP COMMERCE INTELLIGENCE</div><h1>经营数据回流与 AI 优化</h1><p>读取已上架商品的曝光、点击、转化、广告、退货与库存数据，让每条建议都能追溯到具体指标。</p></div>
+          <div class="live-badges"><span id="periodBadge">等待数据</span><span><i class="pulse"></i>READ-ONLY ANALYSIS</span></div>
+        </header>
+
+        <section class="command-bar panel">
+          <div class="package-select"><label><span>已发布商品</span><select id="publishedPackage"><option value="">正在载入…</option></select></label><p id="packageContext">先完成商品发布，才能读取平台经营数据。</p></div>
+          <div class="command-actions"><button class="button ghost" id="syncData" type="button" disabled>⌁ 拉取 Mock 平台数据</button><button class="button primary" id="analyzeData" type="button" disabled>✦ 生成 AI 优化报告</button></div>
+        </section>
+
+        <section class="metric-grid" id="metricGrid">
+          <article class="metric-card"><div class="metric-icon">◎</div><span>总曝光</span><strong id="totalImpressions">—</strong><small>跨平台 7 天</small></article>
+          <article class="metric-card"><div class="metric-icon">↗</div><span>点击率 CTR</span><strong id="totalCtr">—</strong><small>点击 ÷ 曝光</small></article>
+          <article class="metric-card"><div class="metric-icon">◆</div><span>订单转化率</span><strong id="totalConversion">—</strong><small>订单 ÷ 点击</small></article>
+          <article class="metric-card accent"><div class="metric-icon">¥</div><span>总收入</span><strong id="totalRevenue">—</strong><small id="currencyLabel">商品币种</small></article>
+        </section>
+
+        <section class="insight-layout">
+          <div class="insight-main">
+            <article class="panel performance-panel">
+              <div class="panel-heading"><div><div class="eyebrow">PLATFORM PERFORMANCE</div><h2>平台表现对比</h2></div><span class="mode-chip">LATEST SNAPSHOT</span></div>
+              <div class="performance-empty" id="performanceEmpty"><span>⌁</span><h3>尚未回流经营数据</h3><p>点击“拉取 Mock 平台数据”，系统会模拟从 Amazon、TikTok Shop 和 Shopify 读取同一统计周期的指标。</p></div>
+              <div class="platform-performance" id="platformPerformance" hidden></div>
+            </article>
+
+            <article class="panel recommendation-panel">
+              <div class="panel-heading"><div><div class="eyebrow">AI OPTIMIZATION REPORT</div><h2>有证据的优化建议</h2></div><span class="status-chip" id="recommendationCount">0 ITEMS</span></div>
+              <div class="report-empty" id="reportEmpty"><p>完成数据回流后运行分析。建议仅提供决策依据，不会自动修改图片、价格、广告或库存。</p></div>
+              <div class="report-content" id="reportContent" hidden><div class="report-headline" id="reportHeadline"></div><div class="recommendation-list" id="recommendationList"></div></div>
+            </article>
+          </div>
+
+          <aside class="insight-rail">
+            <article class="panel funnel-panel">
+              <div class="panel-heading compact"><div><div class="eyebrow">COMMERCE FUNNEL</div><h2>聚合转化漏斗</h2></div></div>
+              <div class="funnel" id="funnel"><div style="--width:100%"><span>曝光</span><strong>—</strong></div><div style="--width:74%"><span>点击</span><strong>—</strong></div><div style="--width:50%"><span>加购</span><strong>—</strong></div><div style="--width:30%"><span>订单</span><strong>—</strong></div></div>
+            </article>
+
+            <article class="panel findings-panel">
+              <div class="panel-heading compact"><div><div class="eyebrow">CROSS-CHANNEL FINDINGS</div><h2>跨平台发现</h2></div></div>
+              <div id="crossFindings" class="finding-list"><p class="muted">等待 AI 分析。</p></div>
+            </article>
+
+            <article class="panel trace-panel">
+              <div class="eyebrow">AGENT TRACE</div><h2>分析执行轨迹</h2><ol id="performanceTrace"><li class="muted">等待经营数据</li></ol>
+            </article>
+
+            <article class="panel boundary-panel"><div class="eyebrow">VERIFICATION BOUNDARY</div><strong>MOCK ≠ 真实业绩</strong><p>阈值属于 MVP 观察基准。真实接入时需要校准平台口径、归因窗口、退款延迟和业务目标。</p></article>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/performance_insights.js" defer></script>
+  </body>
+</html>

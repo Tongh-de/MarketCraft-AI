@@ -73,6 +73,19 @@ def test_multi_platform_listing_workbench_is_served() -> None:
     assert script.status_code == 200
 
 
+def test_performance_insights_workbench_is_served() -> None:
+    page = client.get("/performance-insights")
+    stylesheet = client.get("/static/performance_insights.css")
+    script = client.get("/static/performance_insights.js")
+
+    assert page.status_code == 200
+    assert "经营数据回流与 AI 优化" in page.text
+    assert "READ-ONLY ANALYSIS" in page.text
+    assert "MOCK ≠ 真实业绩" in page.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")

@@ -10,6 +10,7 @@ from app.api.v1.creation import router as creation_router
 from app.api.v1.knowledge import router as knowledge_router
 from app.api.v1.listings import router as listings_router
 from app.api.v1.operations import router as operations_router
+from app.api.v1.performance import router as performance_router
 from app.api.v1.poster_projects import router as poster_projects_router
 from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
@@ -22,7 +23,7 @@ upload_dir = Path(settings.upload_dir).resolve()
 upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.8.0",
+    version="0.9.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -32,6 +33,7 @@ app.include_router(creation_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
 app.include_router(listings_router, prefix="/api/v1")
 app.include_router(operations_router, prefix="/api/v1")
+app.include_router(performance_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
 app.include_router(poster_projects_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
@@ -66,6 +68,11 @@ def poster_editor() -> FileResponse:
 @app.get("/listing-workbench", include_in_schema=False)
 def listing_workbench() -> FileResponse:
     return FileResponse(static_dir / "listing_workbench.html")
+
+
+@app.get("/performance-insights", include_in_schema=False)
+def performance_insights() -> FileResponse:
+    return FileResponse(static_dir / "performance_insights.html")
 
 
 @app.get("/health", tags=["system"])

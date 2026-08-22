@@ -2,7 +2,7 @@
 
 面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型、商品图片上传、AI 创作台、竞品视觉分析、可编辑海报工作台和多平台商品上架工作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
+当前版本已完成原有七个阶段，并持续建设 AI 商品创作闭环：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供 Skill/Plugin 注册体系、商品图片上传、竞品视觉分析、可编辑海报、多平台商品上架，以及曝光、点击、转化、广告、退货和库存数据回流分析。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
 
 ## Product preview
 
@@ -15,6 +15,10 @@
 ### AI 商品创作与上架
 
 ![多平台商品上架工作台](docs/assets/listing-workbench-preview.svg)
+
+### 经营数据回流与优化
+
+![经营数据回流与 AI 优化工作台](docs/assets/performance-insights-preview.svg)
 
 ## Core workflow
 
@@ -84,6 +88,11 @@ flowchart LR
 - Amazon、TikTok Shop、Shopify 三套字段与素材规则映射
 - 上架包 Draft → Pending Review → Approved/Rejected → Published 状态机
 - 发布前四眼审核、发布幂等键、平台级 Mock 外部 ID 和完整审计轨迹
+- 经营指标快照模型，统一曝光、点击、加购、订单、销量、收入、广告、退货与库存口径
+- 自动计算 CTR、加购率、转化率、ROAS、退货率和库存覆盖天数
+- 电商经营优化 Skill，输出平台对比、数字证据、优先级和可执行实验建议
+- 只读分析边界：Agent 不直接改图、改价、调广告或补货，后续写操作仍需人工审核
+- Mock 平台数据连接器及数据质量提示，不将演示指标描述为真实经营业绩
 
 ## Quick start
 
@@ -95,7 +104,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，打开 `http://localhost:8000/listing-workbench` 生成、审核并模拟发布多平台商品，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
+打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，打开 `http://localhost:8000/listing-workbench` 生成、审核并模拟发布多平台商品，打开 `http://localhost:8000/performance-insights` 查看经营数据与 AI 优化建议，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档。
 
 控制台右侧表单可以一键完成：
 
@@ -191,6 +200,14 @@ docker compose up --build
 
 `POST /api/v1/listing-packages/{id}/publish`：使用幂等键向 Amazon、TikTok Shop 和 Shopify 适配器发布已批准草稿。
 
+`POST /api/v1/performance/snapshots`：写入并校验单个平台经营指标快照，自动计算派生指标。
+
+`POST /api/v1/performance/packages/{id}/demo-snapshots`：为已发布上架包拉取三平台 Mock 演示数据。
+
+`POST /api/v1/performance/packages/{id}/analyze`：运行经营优化 Skill，生成带证据和优先级的只读建议。
+
+`GET /api/v1/performance/reports/{id}`：查询分析报告、平台对比、数据质量提示和执行轨迹。
+
 真实模型模式：
 
 ```bash
@@ -240,7 +257,8 @@ REDIS_URL=redis://redis:6379/0
 | 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
 | 6 ✅ | 订单、库存、履约、补货与飞书审批 | 跨系统 Agent、Human-in-the-loop、业务闭环 |
 | 7 ✅ | 电商运营管理控制台 | 可视化演示、业务状态与执行轨迹 |
-| 8 🚧 | AI 商品素材、竞品分析、海报与多平台上架 | 多模态生成、插件架构、四眼审批与商品一致性 |
+| 8 ✅ | AI 商品素材、竞品分析、海报与多平台上架 | 多模态生成、插件架构、四眼审批与商品一致性 |
+| 9 ✅ | 经营数据回流与 AI 优化建议 | 指标体系、跨平台分析、证据驱动建议与安全边界 |
 
 ## Engineering decisions
 
@@ -252,7 +270,7 @@ REDIS_URL=redis://redis:6379/0
 
 ## Verification boundary
 
-- 已在无外部服务模式验证：26 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、Dashboard 页面和静态资源、Prometheus 指标端点。
+- 已在无外部服务模式验证：43 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、经营指标分析、Dashboard 页面和静态资源、Prometheus 指标端点。
 - 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
 - 已实现但未在本环境联调：PostgreSQL、Redis、Amazon/TikTok Shop/ERP/飞书真实接口，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
 - Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。
