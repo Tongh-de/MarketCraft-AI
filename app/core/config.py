@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4.1-mini"
     openai_image_model: str = "gpt-image-2"
     openai_timeout_seconds: float = 60
+    retrieval_mode: Literal["memory", "milvus"] = "memory"
+    embedding_model: str = "BAAI/bge-small-zh-v1.5"
+    embedding_dim: int = 512
+    milvus_uri: str = "http://localhost:19530"
+    milvus_token: str = "root:Milvus"
+    milvus_collection: str = "marketcraft_brand_knowledge"
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

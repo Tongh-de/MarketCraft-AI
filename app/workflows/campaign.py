@@ -8,9 +8,10 @@ from app.domain.models import (
     CampaignRequest,
     PlatformCopy,
     QualityIssue,
+    RetrievedContext,
     VisualAnalysis,
 )
-from app.services.brand_repository import BrandRepository
+from app.services.brand_repository import BrandRepository, get_brand_repository
 from app.services.generator import ContentGenerator, get_generator
 from app.services.quality import QualityService
 from app.services.vision import VisionAnalyzer, get_vision_analyzer
@@ -21,6 +22,7 @@ class CampaignState(TypedDict):
     visual_analysis: NotRequired[VisualAnalysis]
     selling_points: NotRequired[list[str]]
     brand_context: NotRequired[list[str]]
+    brand_citations: NotRequired[list[RetrievedContext]]
     copies: NotRequired[list[PlatformCopy]]
     poster_prompt: NotRequired[str]
     quality_score: NotRequired[int]
@@ -36,7 +38,7 @@ def build_campaign_graph(
     vision_analyzer: VisionAnalyzer | None = None,
 ):
     generator = generator or get_generator()
-    brand_repository = brand_repository or BrandRepository()
+    brand_repository = brand_repository or get_brand_repository()
     quality_service = quality_service or QualityService()
     vision_analyzer = vision_analyzer or get_vision_analyzer()
 
@@ -54,10 +56,19 @@ def build_campaign_graph(
 
     def retrieve_brand_context(state: CampaignState) -> dict:
         request = state["request"]
+        query = (
+            f"{request.product.name} {request.product.category} "
+            f"{request.objective} {request.product.target_audience}"
+        )
+        citations = brand_repository.retrieve(
+            request.brand_id, request.product.category, query
+        )
         return {
-            "brand_context": brand_repository.retrieve(
-                request.brand_id, request.product.category
-            ),
+            "brand_context": [
+                f"[{item.source}#{item.doc_id}] {item.title}：{item.content}"
+                for item in citations
+            ],
+            "brand_citations": citations,
             "trace": [*state.get("trace", []), "retrieve_brand_context"],
         }
 
@@ -88,6 +99,7 @@ def build_campaign_graph(
             product_sku=request.product.sku,
             selling_points=state["selling_points"],
             brand_context=state["brand_context"],
+            brand_citations=state["brand_citations"],
             visual_analysis=state["visual_analysis"],
             copies=state["copies"],
             poster_prompt=state["poster_prompt"],

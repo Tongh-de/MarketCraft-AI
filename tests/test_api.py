@@ -33,6 +33,7 @@ def test_generate_campaign_endpoint() -> None:
     assert result["status"] == "approved"
     assert result["quality_score"] == 100
     assert len(result["copies"]) == 2
+    assert result["brand_citations"]
     assert result["visual_analysis"]["confidence"] == 0.35
     assert result["trace"][-1] == "package_result"
 
@@ -49,3 +50,41 @@ def test_mock_poster_endpoint_is_keyless() -> None:
     assert response.status_code == 200
     assert response.json()["status"] == "mock"
     assert response.json()["image_base64"] is None
+
+
+def test_knowledge_search_endpoint_returns_traceable_sources() -> None:
+    response = client.post(
+        "/api/v1/knowledge/search",
+        json={
+            "query": "咖啡杯容量和材质怎么宣传",
+            "brand_id": "demo-brand",
+            "category": "咖啡杯",
+            "limit": 3,
+        },
+    )
+    assert response.status_code == 200
+    assert response.json()["results"]
+    assert response.json()["results"][0]["source"]
+
+
+def test_product_catalog_api_versions_updates() -> None:
+    payload = {
+        "sku": "API-CUP-001",
+        "name": "接口测试保温杯",
+        "category": "咖啡杯",
+        "description": "用于验证商品目录接口新增、更新和搜索行为。",
+        "attributes": {"容量": "400ml"},
+        "target_audience": "办公室用户",
+        "brand_id": "demo-brand",
+    }
+    created = client.put("/api/v1/products/API-CUP-001", json=payload)
+    updated = client.put(
+        "/api/v1/products/API-CUP-001", json={**payload, "price": 99}
+    )
+    searched = client.post(
+        "/api/v1/products/search/query", json={"query": "办公室 保温杯"}
+    )
+    assert created.status_code == 200
+    assert created.json()["version"] == 1
+    assert updated.json()["version"] == 2
+    assert searched.json()["items"][0]["sku"] == "API-CUP-001"

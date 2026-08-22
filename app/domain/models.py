@@ -63,6 +63,36 @@ class VisualAnalysis(BaseModel):
     confidence: float = Field(ge=0, le=1)
 
 
+class KnowledgeDocument(BaseModel):
+    doc_id: str = Field(min_length=2, max_length=128)
+    brand_id: str = Field(min_length=2, max_length=64)
+    title: str = Field(min_length=2, max_length=200)
+    content: str = Field(min_length=5, max_length=8000)
+    category: str = Field(default="global", min_length=2, max_length=80)
+    source: str = Field(default="manual", min_length=2, max_length=300)
+
+
+class RetrievedContext(BaseModel):
+    doc_id: str
+    title: str
+    content: str
+    source: str
+    score: float = Field(ge=0)
+    retrieval_method: str = "hybrid_rrf"
+
+
+class KnowledgeSearchRequest(BaseModel):
+    query: str = Field(min_length=2, max_length=500)
+    brand_id: str = Field(default="demo-brand", min_length=2, max_length=64)
+    category: str | None = Field(default=None, max_length=80)
+    limit: int = Field(default=4, ge=1, le=20)
+
+
+class KnowledgeSearchResponse(BaseModel):
+    query: str
+    results: list[RetrievedContext]
+
+
 class PlatformCopy(BaseModel):
     platform: Platform
     title: str
@@ -76,6 +106,7 @@ class CampaignPackage(BaseModel):
     product_sku: str
     selling_points: list[str]
     brand_context: list[str]
+    brand_citations: list[RetrievedContext]
     visual_analysis: VisualAnalysis
     copies: list[PlatformCopy]
     poster_prompt: str
@@ -97,3 +128,21 @@ class PosterResponse(BaseModel):
     mime_type: str = "image/png"
     image_base64: str | None = None
     revised_prompt: str | None = None
+
+
+class ProductRecord(ProductInput):
+    brand_id: str = Field(default="demo-brand", min_length=2, max_length=64)
+    version: int = Field(default=1, ge=1)
+    status: str = Field(default="active", pattern=r"^(active|draft|archived)$")
+
+
+class ProductSearchRequest(BaseModel):
+    query: str = Field(default="", max_length=300)
+    category: str | None = Field(default=None, max_length=80)
+    brand_id: str | None = Field(default=None, max_length=64)
+    limit: int = Field(default=10, ge=1, le=100)
+
+
+class ProductSearchResponse(BaseModel):
+    total: int
+    items: list[ProductRecord]

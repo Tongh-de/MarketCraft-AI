@@ -2,7 +2,7 @@
 
 面向电商运营团队的多模态营销内容生产 Agent 平台。系统接收商品资料和图片，自动提取卖点、检索品牌规范、生成多平台文案与海报提示词，并通过质量审核节点输出可追溯的营销内容包。
 
-当前版本已完成 Phase 2：除核心工作流外，还支持真实大模型结构化生成、商品图片理解和营销海报生成。默认使用 Mock（模拟）模式，无需模型密钥即可演示；切换 `GENERATION_MODE=openai` 后可调用真实模型。
+当前版本已完成 Phase 3：除多模态生成外，还加入品牌知识库、商品目录、BM25＋Dense 混合召回、RRF 重排和引用溯源。默认使用内存检索与 Mock 生成，无需外部服务即可演示；生产配置可切换 Milvus 和真实模型。
 
 ## Core workflow
 
@@ -27,6 +27,11 @@ flowchart LR
 - 多模态商品图片分析，输出视觉优势、风险、布局建议和置信度
 - OpenAI Responses API + Pydantic Structured Outputs（结构化输出）
 - 独立海报生成接口，可接收 GPT Image 返回的 Base64 PNG
+- 品牌知识文档增量写入和品牌、品类元数据过滤
+- BM25 关键词召回＋Dense 向量召回＋RRF 排名融合
+- Milvus 原生 BM25 与多向量混合检索生产适配器
+- 商品目录的新增、更新、版本号和搜索接口
+- 生成结果携带文档 ID、来源和融合分数，支持引用溯源
 
 ## Quick start
 
@@ -67,6 +72,14 @@ docker compose up --build
 
 接收工作流生成的海报 Prompt，并返回图片生成状态、模型、MIME 类型和 Base64 图片数据。Mock 模式仅返回可验证的占位响应，不产生调用费用。
 
+`POST /api/v1/knowledge/documents`：增量写入品牌知识文档。
+
+`POST /api/v1/knowledge/search`：按品牌和品类执行混合检索。
+
+`PUT /api/v1/products/{sku}`：新增或更新商品，自动递增版本号。
+
+`POST /api/v1/products/search/query`：搜索商品目录。
+
 真实模型模式：
 
 ```bash
@@ -74,6 +87,15 @@ GENERATION_MODE=openai
 OPENAI_API_KEY=your-key
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_IMAGE_MODEL=gpt-image-2
+```
+
+Milvus 生产检索模式：
+
+```bash
+pip install -e ".[rag]"
+RETRIEVAL_MODE=milvus
+MILVUS_URI=http://localhost:19530
+MILVUS_TOKEN=root:Milvus
 ```
 
 完整请求示例见 [examples.http](examples.http)。
@@ -84,7 +106,7 @@ OPENAI_IMAGE_MODEL=gpt-image-2
 | --- | --- | --- |
 | 1 | 商品输入 → 文案 → 海报 Prompt → 质检 | FastAPI、LangGraph、结构化输出、异常与质量控制 |
 | 2 ✅ | 商品图片理解、真实 LLM、海报生成 | 多模态模型、结构化输出、供应商抽象 |
-| 3 | 品牌 RAG、商品库、混合召回 | Milvus、BM25、Rerank、引用溯源 |
+| 3 ✅ | 品牌 RAG、商品库、混合召回 | Milvus、BM25、RRF、引用溯源 |
 | 4 | 人工审核、版本管理、多平台发布 | Human-in-the-loop、权限、幂等与审计 |
 | 5 | 评测、监控、Redis/PostgreSQL、部署 | 生产评测、可观测性、可靠性与工程化 |
 

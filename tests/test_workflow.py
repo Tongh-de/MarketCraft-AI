@@ -17,6 +17,8 @@ def test_campaign_workflow_returns_traceable_package() -> None:
     assert result.product_sku == "CUP-001"
     assert len(result.copies) == 2
     assert result.visual_analysis.confidence == 0.35
+    assert result.brand_citations
+    assert result.brand_citations[0].doc_id
     assert result.trace == [
         "analyze_product_visuals",
         "extract_selling_points",

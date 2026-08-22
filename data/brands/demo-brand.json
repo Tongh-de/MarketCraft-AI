@@ -1,13 +1,37 @@
 {
-  "name": "MarketCraft Demo Brand",
-  "tone": "真诚、清晰、强调真实使用场景",
-  "rules": [
-    "不得使用第一、最好、百分百等绝对化词语",
-    "没有数据依据时不得承诺功效",
-    "价格只作为参考，不制造虚假稀缺感"
-  ],
-  "category_rules": {
-    "咖啡杯": "突出容量、材质、便携性和清洁方式，不宣称医疗或保健功效"
-  }
+  "brand_id": "demo-brand",
+  "documents": [
+    {
+      "doc_id": "brand-tone-001",
+      "brand_id": "demo-brand",
+      "title": "品牌语气规范",
+      "content": "品牌表达应真诚、清晰，优先描述真实使用场景，避免制造焦虑和虚假稀缺感。",
+      "category": "global",
+      "source": "brand-guideline-v1"
+    },
+    {
+      "doc_id": "compliance-001",
+      "brand_id": "demo-brand",
+      "title": "广告合规禁用规则",
+      "content": "不得使用第一、最好、顶级、百分百等绝对化表述；没有验证数据时不得承诺功效。",
+      "category": "global",
+      "source": "compliance-policy-v2"
+    },
+    {
+      "doc_id": "pricing-001",
+      "brand_id": "demo-brand",
+      "title": "价格信息规则",
+      "content": "价格只作为参考，不得虚构原价、折扣、库存数量或限时优惠。",
+      "category": "global",
+      "source": "pricing-policy-v1"
+    },
+    {
+      "doc_id": "cup-category-001",
+      "brand_id": "demo-brand",
+      "title": "咖啡杯品类营销规范",
+      "content": "咖啡杯文案可以突出容量、材质、便携性和清洁方式，不得宣称医疗或保健功效。",
+      "category": "咖啡杯",
+      "source": "category-guide-cup-v3"
+    }
+  ]
 }
-
