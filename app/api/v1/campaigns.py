@@ -12,6 +12,7 @@ from app.domain.models import (
     PublishRequest,
     ReviewSubmitRequest,
 )
+from app.observability import CAMPAIGN_GENERATIONS, PUBLICATIONS
 from app.services.lifecycle import (
     LifecycleConflictError,
     LifecycleNotFoundError,
@@ -31,6 +32,7 @@ def generate_campaign(
     thread_id = x_thread_id or str(uuid4())
     package = run_campaign(request, thread_id)
     get_lifecycle_service().create_draft(package, x_actor)
+    CAMPAIGN_GENERATIONS.labels(package.status).inc()
     return package
 
 
@@ -83,6 +85,9 @@ def decide_campaign(
 @router.post("/{campaign_id}/publish", response_model=PublishBatchResult)
 def publish_campaign(campaign_id: UUID, request: PublishRequest) -> PublishBatchResult:
     try:
-        return get_lifecycle_service().publish(campaign_id, request)
+        result = get_lifecycle_service().publish(campaign_id, request)
+        for item in result.results:
+            PUBLICATIONS.labels(item.platform.value, item.status).inc()
+        return result
     except (LifecycleNotFoundError, LifecycleConflictError) as error:
         _raise_http_error(error)

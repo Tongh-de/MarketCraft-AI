@@ -1,0 +1,30 @@
+[
+  {
+    "case_id": "compliance-absolute-claims",
+    "query": "文案能不能使用最好、顶级和百分百？",
+    "brand_id": "demo-brand",
+    "category": "咖啡杯",
+    "expected_doc_ids": ["compliance-001"]
+  },
+  {
+    "case_id": "cup-material-capacity",
+    "query": "咖啡杯可以重点宣传哪些产品属性？",
+    "brand_id": "demo-brand",
+    "category": "咖啡杯",
+    "expected_doc_ids": ["cup-category-001"]
+  },
+  {
+    "case_id": "price-discount-policy",
+    "query": "没有活动依据时可以写限时折扣和虚构原价吗？",
+    "brand_id": "demo-brand",
+    "category": "咖啡杯",
+    "expected_doc_ids": ["pricing-001"]
+  },
+  {
+    "case_id": "brand-tone",
+    "query": "品牌文案应该采用什么表达风格？",
+    "brand_id": "demo-brand",
+    "category": "咖啡杯",
+    "expected_doc_ids": ["brand-tone-001"]
+  }
+]

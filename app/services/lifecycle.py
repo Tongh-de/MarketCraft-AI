@@ -16,6 +16,8 @@ from app.domain.models import (
     PublishBatchResult,
     PublishRequest,
 )
+from app.services.idempotency import IdempotencyStore, get_idempotency_store
+from app.services.persistence import JsonStateStore, get_state_store
 
 
 class LifecycleNotFoundError(Exception):
@@ -61,13 +63,25 @@ class MockPlatformPublisher(PlatformPublisher):
 
 
 class CampaignLifecycleService:
-    def __init__(self, publishers: dict[Platform, PlatformPublisher] | None = None) -> None:
+    def __init__(
+        self,
+        publishers: dict[Platform, PlatformPublisher] | None = None,
+        state_store: JsonStateStore | None = None,
+        idempotency_store: IdempotencyStore | None = None,
+    ) -> None:
         self._campaigns: dict[UUID, CampaignLifecycle] = {}
-        self._publication_cache: dict[str, PublishBatchResult] = {}
-        self._publication_owners: dict[str, tuple[UUID, int]] = {}
+        self.state_store = state_store or get_state_store()
+        self.idempotency_store = idempotency_store or get_idempotency_store()
         self.publishers = publishers or {
             platform: MockPlatformPublisher() for platform in Platform
         }
+
+    def _save(self, lifecycle: CampaignLifecycle) -> None:
+        self.state_store.put(
+            "campaign_lifecycle",
+            str(lifecycle.campaign_id),
+            lifecycle.model_dump(mode="json"),
+        )
 
     def create_draft(self, package: CampaignPackage, actor: str) -> CampaignLifecycle:
         existing = self._campaigns.get(package.campaign_id)
@@ -94,10 +108,16 @@ class CampaignLifecycleService:
             ],
         )
         self._campaigns[package.campaign_id] = lifecycle
+        self._save(lifecycle)
         return lifecycle
 
     def get(self, campaign_id: UUID) -> CampaignLifecycle:
         lifecycle = self._campaigns.get(campaign_id)
+        if not lifecycle:
+            payload = self.state_store.get("campaign_lifecycle", str(campaign_id))
+            if payload:
+                lifecycle = CampaignLifecycle.model_validate(payload)
+                self._campaigns[campaign_id] = lifecycle
         if not lifecycle:
             raise LifecycleNotFoundError("campaign lifecycle not found")
         return lifecycle
@@ -135,6 +155,7 @@ class CampaignLifecycleService:
                 details={"version": str(next_version), "note": request.change_note},
             )
         )
+        self._save(lifecycle)
         return lifecycle
 
     def submit_review(self, campaign_id: UUID, actor: str) -> CampaignLifecycle:
@@ -150,6 +171,7 @@ class CampaignLifecycleService:
                 details={"version": str(lifecycle.current_version)},
             )
         )
+        self._save(lifecycle)
         return lifecycle
 
     def decide(
@@ -181,17 +203,20 @@ class CampaignLifecycleService:
                 },
             )
         )
+        self._save(lifecycle)
         return lifecycle
 
     def publish(self, campaign_id: UUID, request: PublishRequest) -> PublishBatchResult:
         lifecycle = self.get(campaign_id)
-        owner = self._publication_owners.get(request.idempotency_key)
+        cached_entry = self.idempotency_store.get(request.idempotency_key)
         current_owner = (campaign_id, lifecycle.current_version)
-        if owner and owner != current_owner:
-            raise LifecycleConflictError("idempotency key is already used by another version")
-        cached = self._publication_cache.get(request.idempotency_key)
-        if cached:
-            return cached
+        if cached_entry:
+            owner = (cached_entry[0], cached_entry[1])
+            if owner != current_owner:
+                raise LifecycleConflictError(
+                    "idempotency key is already used by another version"
+                )
+            return cached_entry[2]
         if lifecycle.status != LifecycleStatus.APPROVED:
             raise LifecycleConflictError("only approved campaigns can be published")
 
@@ -244,8 +269,13 @@ class CampaignLifecycleService:
             status=final_status,
             results=results,
         )
-        self._publication_owners[request.idempotency_key] = current_owner
-        self._publication_cache[request.idempotency_key] = batch
+        self.idempotency_store.put(
+            request.idempotency_key,
+            campaign_id,
+            lifecycle.current_version,
+            batch,
+        )
+        self._save(lifecycle)
         return batch
 
 

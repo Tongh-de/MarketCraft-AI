@@ -2,7 +2,7 @@
 
 面向电商运营团队的多模态营销内容生产 Agent 平台。系统接收商品资料和图片，自动提取卖点、检索品牌规范、生成多平台文案与海报提示词，并通过质量审核节点输出可追溯的营销内容包。
 
-当前版本已完成 Phase 4：系统已覆盖多模态生成、品牌 RAG、商品目录、人工审核、内容版本和多平台发布闭环。默认使用内存存储、Mock 生成和 Mock 发布，无需外部凭证即可演示；所有模拟结果均带有明确标识。
+当前版本已完成五个阶段：系统覆盖多模态生成、品牌 RAG、商品目录、人工审核、内容版本、多平台发布、持久化、监控和离线评测。默认使用内存存储、Mock 生成和 Mock 发布，无需外部凭证即可演示；所有模拟结果均带有明确标识。
 
 ## Core workflow
 
@@ -38,6 +38,11 @@ flowchart LR
 - 发布幂等键、单平台错误隔离和 Partial Failed（部分失败）状态
 - 小红书、抖音、淘宝、京东发布适配器接口及确定性 Mock 实现
 - 追加式审计日志，记录操作者、动作、版本和审核理由
+- 可切换的内存或 SQLAlchemy 状态存储，兼容 SQLite 与 PostgreSQL
+- 可切换的内存或 Redis 发布幂等存储，并配置结果 TTL
+- Prometheus HTTP 与业务指标，暴露于 `/metrics`
+- 版本化 RAG 回归集，计算 Recall@K、MRR 和引用覆盖率
+- CI 自动执行单元测试、Ruff 检查和 RAG 回归评测
 
 ## Quick start
 
@@ -53,6 +58,8 @@ uvicorn app.main:app --reload
 
 ```bash
 pytest
+ruff check app scripts tests
+python -m scripts.evaluate_rag --top-k 1
 ```
 
 Docker 启动：
@@ -94,11 +101,13 @@ docker compose up --build
 
 `POST /api/v1/campaigns/{id}/publish`：幂等发布已批准版本。
 
+`GET /metrics`：返回 Prometheus 格式的 HTTP、内容生成和发布指标。
+
 真实模型模式：
 
 ```bash
 GENERATION_MODE=openai
-OPENAI_API_KEY=your-key
+OPENAI_API_KEY=
 OPENAI_MODEL=gpt-4.1-mini
 OPENAI_IMAGE_MODEL=gpt-image-2
 ```
@@ -109,8 +118,26 @@ Milvus 生产检索模式：
 pip install -e ".[rag]"
 RETRIEVAL_MODE=milvus
 MILVUS_URI=http://localhost:19530
-MILVUS_TOKEN=root:Milvus
+MILVUS_TOKEN=
 ```
+
+SQLite 持久化模式：
+
+```bash
+PERSISTENCE_MODE=database
+DATABASE_URL=sqlite+pysqlite:///./marketcraft.db
+```
+
+PostgreSQL 与 Redis 模式已在 `docker-compose.yml` 中编排：
+
+```bash
+PERSISTENCE_MODE=database
+DATABASE_URL=postgresql+psycopg://marketcraft:${POSTGRES_PASSWORD}@postgres:5432/marketcraft
+IDEMPOTENCY_MODE=redis
+REDIS_URL=redis://redis:6379/0
+```
+
+运行 Compose 前需在未提交的 `.env` 中设置 `POSTGRES_PASSWORD`；仓库不提供默认密码。
 
 完整请求示例见 [examples.http](examples.http)。
 
@@ -122,13 +149,20 @@ MILVUS_TOKEN=root:Milvus
 | 2 ✅ | 商品图片理解、真实 LLM、海报生成 | 多模态模型、结构化输出、供应商抽象 |
 | 3 ✅ | 品牌 RAG、商品库、混合召回 | Milvus、BM25、RRF、引用溯源 |
 | 4 ✅ | 人工审核、版本管理、多平台发布 | Human-in-the-loop、四眼原则、幂等与审计 |
-| 5 | 评测、监控、Redis/PostgreSQL、部署 | 生产评测、可观测性、可靠性与工程化 |
+| 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
 
 ## Engineering decisions
 
 - 使用 Workflow（固定工作流）作为主链路，保证营销生产过程稳定、可审计；只在创意生成和工具选择等局部使用 Agent 自主性。
 - 所有生成器都通过 `ContentGenerator` 接口接入，Mock、OpenAI 兼容接口或本地模型可以互换。
 - 生成结果必须经过独立质量节点，不能让同一次生成直接充当审核结论。
-- 第一阶段用内存 Checkpointer 降低启动成本，生产版迁移至 Redis/PostgreSQL。
+- 默认内存模式降低演示成本；通过环境变量可切换 SQLAlchemy 持久化与 Redis 幂等缓存。
+
+## Verification boundary
+
+- 已在无外部服务模式验证：19 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布幂等、Prometheus 指标端点。
+- 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
+- 已实现但未在本环境联调：PostgreSQL、Redis、真实平台发布，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
+- Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。
 
 更完整的设计见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。

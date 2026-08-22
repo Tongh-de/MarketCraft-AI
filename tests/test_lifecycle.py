@@ -15,6 +15,7 @@ from app.services.lifecycle import (
     PlatformPublisher,
     PlatformPublishError,
 )
+from app.services.persistence import SQLAlchemyJsonStateStore
 from app.workflows.campaign import run_campaign
 
 
@@ -127,3 +128,21 @@ def test_platform_failure_is_reported_without_fake_success() -> None:
     assert result.status == "partial_failed"
     assert result.results[0].status == "failed"
     assert result.results[0].external_id is None
+
+
+def test_campaign_lifecycle_survives_service_restart(tmp_path) -> None:
+    database_url = f"sqlite+pysqlite:///{tmp_path / 'lifecycle.db'}"
+    first_service = CampaignLifecycleService(
+        state_store=SQLAlchemyJsonStateStore(database_url)
+    )
+    package = make_package()
+    first_service.create_draft(package, "content-agent")
+    first_service.submit_review(package.campaign_id, "operator-a")
+
+    restarted_service = CampaignLifecycleService(
+        state_store=SQLAlchemyJsonStateStore(database_url)
+    )
+    restored = restarted_service.get(package.campaign_id)
+    assert restored.status == "pending_review"
+    assert restored.requested_by == "operator-a"
+    assert restored.audit_log[-1].action == "review_submitted"

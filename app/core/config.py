@@ -18,8 +18,13 @@ class Settings(BaseSettings):
     embedding_model: str = "BAAI/bge-small-zh-v1.5"
     embedding_dim: int = 512
     milvus_uri: str = "http://localhost:19530"
-    milvus_token: str = "root:Milvus"
+    milvus_token: str = ""
     milvus_collection: str = "marketcraft_brand_knowledge"
+    persistence_mode: Literal["memory", "database"] = "memory"
+    database_url: str = "sqlite+pysqlite:///./marketcraft.db"
+    idempotency_mode: Literal["memory", "redis"] = "memory"
+    redis_url: str = "redis://localhost:6379/0"
+    idempotency_ttl_seconds: int = 604800
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

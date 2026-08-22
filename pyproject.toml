@@ -16,6 +16,10 @@ dependencies = [
   "langgraph>=0.2,<2.0",
   "langchain-openai>=0.3,<2.0",
   "openai>=2.45,<4.0",
+  "prometheus-client>=0.20,<1.0",
+  "sqlalchemy>=2.0,<3.0",
+  "redis>=5.0,<8.0",
+  "psycopg[binary]>=3.2,<4.0",
 ]
 
 [project.optional-dependencies]

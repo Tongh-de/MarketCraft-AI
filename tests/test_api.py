@@ -11,6 +11,14 @@ def test_health_endpoint() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_prometheus_metrics_endpoint() -> None:
+    client.get("/health")
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert "marketcraft_http_requests_total" in response.text
+    assert "marketcraft_http_request_duration_seconds" in response.text
+
+
 def test_generate_campaign_endpoint() -> None:
     response = client.post(
         "/api/v1/campaigns/generate",
