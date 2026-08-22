@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 可编辑商品海报工作台" />
+    <title>MarketCraft AI · AI 海报工作台</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/poster_editor.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>POSTER STUDIO</small></span></a>
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="/competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item active" href="/poster-editor"><span>▣</span>AI 海报工作台</a>
+          <a class="nav-item" href="#canvas"><span>◇</span>可编辑画布</a>
+          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
+        </nav>
+        <div class="environment-card"><div class="eyebrow light">POSTER ENGINE</div><strong><i class="pulse"></i>Mock 背景生成</strong><p>商品、文字、价格和按钮均保留为可编辑图层。</p></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div><div class="eyebrow">EDITABLE COMMERCE POSTER</div><h1>AI 商品海报工作台</h1><p>AI 提供设计草稿，运营人员继续编辑图层并导出成品。</p></div>
+          <div class="live-badges"><span id="saveStatus">尚未保存</span><span><i class="pulse"></i>可编辑图层</span></div>
+        </header>
+
+        <section class="poster-layout">
+          <article class="panel control-panel">
+            <div class="panel-heading"><div><div class="eyebrow">CONTENT & FORMAT</div><h2>海报内容</h2></div><span class="mode-chip">v<span id="versionLabel">0</span></span></div>
+            <form id="posterForm">
+              <label class="poster-upload">
+                <input id="posterImage" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <img id="uploadThumb" alt="商品图预览" hidden />
+                <span id="posterUploadPlaceholder"><b>＋</b>上传商品图</span>
+              </label>
+              <div class="form-row"><label><span>商品名称</span><input name="name" value="轻盈通勤夹克" required /></label><label><span>SKU</span><input name="sku" value="JACKET-001" required /></label></div>
+              <label><span>商品品类</span><input name="category" value="女装外套" required /></label>
+              <label><span>主标题</span><input name="title" value="轻盈通勤，自在有型" required maxlength="80" /></label>
+              <label><span>副标题</span><input name="subtitle" value="柔软面料 · 简约版型 · 日常百搭" maxlength="160" /></label>
+              <div class="form-row"><label><span>价格文案</span><input name="price" value="新品价 ¥399" maxlength="40" /></label><label><span>按钮文字</span><input name="cta" value="立即查看" maxlength="30" /></label></div>
+              <label><span>平台尺寸</span><select name="preset"><option value="xiaohongshu_3_4">小红书 3:4 · 1242×1660</option><option value="tiktok_vertical">TikTok 3:4 · 1080×1440</option><option value="amazon_square">Amazon 1:1 · 2000×2000</option><option value="instagram_square">Instagram 1:1 · 1080×1080</option></select></label>
+              <label><span>设计风格</span><select name="style"><option value="clean">简洁 Clean</option><option value="premium">高级 Premium</option><option value="energetic">活力 Energetic</option><option value="lifestyle">生活方式 Lifestyle</option></select></label>
+              <label><span>背景生成插件</span><select name="plugin" id="posterPlugin"></select></label>
+              <button class="button primary full" id="generatePoster" type="submit">✦ 生成可编辑海报</button>
+            </form>
+          </article>
+
+          <section class="canvas-column">
+            <article class="panel canvas-panel" id="canvas">
+              <div class="panel-heading"><div><div class="eyebrow">LIVE CANVAS</div><h2>海报画布</h2></div><span class="status-chip" id="canvasSize">1242 × 1660</span></div>
+              <div class="canvas-shell">
+                <div class="poster-canvas" id="posterCanvas">
+                  <div class="canvas-orb"></div>
+                  <img id="canvasProduct" alt="海报商品" hidden />
+                  <div class="canvas-copy" id="canvasCopy"><h3 id="canvasTitle">轻盈通勤，自在有型</h3><p id="canvasSubtitle">柔软面料 · 简约版型 · 日常百搭</p><strong id="canvasPrice">新品价 ¥399</strong><button id="canvasCta" type="button">立即查看</button></div>
+                  <span class="canvas-mock">MOCK</span>
+                </div>
+              </div>
+              <div class="canvas-actions"><button class="button ghost" id="savePoster" type="button" disabled>保存新版本</button><a class="button ghost disabled" id="downloadSvg">下载 SVG</a><button class="button primary" id="exportPng" type="button">导出 PNG</button></div>
+            </article>
+          </section>
+
+          <aside class="panel layer-panel">
+            <div class="panel-heading"><div><div class="eyebrow">LAYERS & STYLE</div><h2>图层属性</h2></div></div>
+            <div class="layer-controls">
+              <fieldset><legend>品牌颜色</legend><div class="color-grid"><label><span>品牌色</span><input name="brandColor" type="color" value="#176044" /></label><label><span>背景色</span><input name="backgroundColor" type="color" value="#f3f0e8" /></label><label><span>文字色</span><input name="textColor" type="color" value="#17211b" /></label></div></fieldset>
+              <fieldset><legend>商品图层</legend><label><span>水平位置</span><input name="productX" type="range" min="15" max="85" value="70" /></label><label><span>垂直位置</span><input name="productY" type="range" min="20" max="85" value="58" /></label><label><span>商品缩放</span><input name="productScale" type="range" min="25" max="90" value="58" /></label></fieldset>
+              <fieldset><legend>文案图层</legend><label><span>水平位置</span><input name="contentX" type="range" min="3" max="70" value="8" /></label><label><span>垂直位置</span><input name="contentY" type="range" min="5" max="75" value="16" /></label><label><span>对齐方式</span><select name="textAlign"><option value="left">左对齐</option><option value="center">居中</option><option value="right">右对齐</option></select></label></fieldset>
+              <div class="skill-proof"><div class="eyebrow">ACTIVE SKILL</div><strong>AI 海报设计 Skill</strong><p>商品身份锁定 → 插件选择 → 可编辑布局 → 品牌颜色 → 草稿版本</p></div>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+    <canvas id="exportCanvas" hidden></canvas>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/poster_editor.js" defer></script>
+  </body>
+</html>

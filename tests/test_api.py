@@ -48,6 +48,18 @@ def test_competitor_analysis_studio_is_served() -> None:
     assert script.status_code == 200
 
 
+def test_editable_poster_studio_is_served() -> None:
+    page = client.get("/poster-editor")
+    stylesheet = client.get("/static/poster_editor.css")
+    script = client.get("/static/poster_editor.js")
+
+    assert page.status_code == 200
+    assert "AI 商品海报工作台" in page.text
+    assert "可编辑图层" in page.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")

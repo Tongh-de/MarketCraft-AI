@@ -9,6 +9,7 @@ from app.api.v1.campaigns import router as campaigns_router
 from app.api.v1.creation import router as creation_router
 from app.api.v1.knowledge import router as knowledge_router
 from app.api.v1.operations import router as operations_router
+from app.api.v1.poster_projects import router as poster_projects_router
 from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
 from app.core.config import get_settings
@@ -20,7 +21,7 @@ upload_dir = Path(settings.upload_dir).resolve()
 upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.6.0",
+    version="0.7.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -30,6 +31,7 @@ app.include_router(creation_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
 app.include_router(operations_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
+app.include_router(poster_projects_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
 app.middleware("http")(prometheus_middleware)
 
@@ -52,6 +54,11 @@ def studio() -> FileResponse:
 @app.get("/competitors", include_in_schema=False)
 def competitors() -> FileResponse:
     return FileResponse(static_dir / "competitors.html")
+
+
+@app.get("/poster-editor", include_in_schema=False)
+def poster_editor() -> FileResponse:
+    return FileResponse(static_dir / "poster_editor.html")
 
 
 @app.get("/health", tags=["system"])

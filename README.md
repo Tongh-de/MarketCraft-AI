@@ -2,7 +2,7 @@
 
 面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型、商品图片上传、AI 创作台和竞品视觉分析工作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
+当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型、商品图片上传、AI 创作台、竞品视觉分析和可编辑海报工作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
 
 ## Product preview
 
@@ -73,6 +73,9 @@ flowchart LR
 - 竞品视觉分析 Skill：构图、色彩、场景、卖点和品牌差异五维对比
 - 多模态视觉分析 Mock 插件，明确区分模板演示与真实像素分析
 - 三套差异化创作 Brief（创作简报）和禁止直接复制的合规边界
+- AI 海报设计 Skill，支持平台尺寸、风格、品牌颜色和插件选择
+- 可编辑商品、标题、副标题、价格、按钮、位置与缩放图层
+- 海报项目版本管理，以及服务端 SVG 和浏览器端 PNG 导出
 
 ## Quick start
 
@@ -84,7 +87,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
+打开 `http://localhost:8000/studio` 进入 AI 商品创作台，打开 `http://localhost:8000/competitors` 进入竞品视觉分析，打开 `http://localhost:8000/poster-editor` 编辑商品海报，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
 
 控制台右侧表单可以一键完成：
 
@@ -165,6 +168,12 @@ docker compose up --build
 `POST /api/v1/creation/competitor-analyses`：提交自己的商品图和竞品图，生成结构化对比报告。
 
 `GET /api/v1/creation/competitor-analyses/{id}`：查询竞品分析维度、机会点和差异化创作方案。
+
+`POST /api/v1/poster-projects`：使用上传商品图创建可编辑海报项目。
+
+`PUT /api/v1/poster-projects/{id}`：保存海报文字、颜色、位置和尺寸的新版本。
+
+`GET /api/v1/poster-projects/{id}/preview.svg`：预览或下载服务端渲染的 SVG 海报。
 
 真实模型模式：
 
