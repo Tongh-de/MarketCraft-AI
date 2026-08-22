@@ -1,0 +1,183 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="900" viewBox="0 0 1440 900" role="img" aria-labelledby="title desc">
+  <title id="title">MarketCraft AI 跨境电商运营控制台预览</title>
+  <desc id="desc">展示运营指标、订单任务、库存与审批操作的控制台界面</desc>
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#21362a" flood-opacity="0.08"/>
+    </filter>
+    <style>
+      .ui { font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; }
+      .serif { font-family: Georgia, "Songti SC", serif; }
+      .muted { fill: #69736d; }
+      .tiny { font-size: 10px; letter-spacing: 1.5px; }
+      .small { font-size: 12px; }
+      .body { font-size: 14px; }
+      .label { font-size: 11px; font-weight: 700; }
+      .heading { fill: #17211b; font-weight: 700; }
+    </style>
+  </defs>
+
+  <rect width="1440" height="900" fill="#f3f5f1"/>
+  <circle cx="1270" cy="50" r="260" fill="#d9f06f" opacity="0.12"/>
+
+  <g class="ui">
+    <rect width="245" height="900" fill="#153c2e"/>
+    <rect x="28" y="28" width="42" height="42" rx="12" fill="#d9f06f"/>
+    <text x="49" y="56" text-anchor="middle" font-size="20" font-weight="800" fill="#174532">M</text>
+    <text x="83" y="48" font-size="17" font-weight="700" fill="#ffffff">MarketCraft</text>
+    <text x="83" y="64" class="tiny" fill="#ffffff" opacity="0.48">AI OPERATIONS</text>
+
+    <rect x="20" y="122" width="205" height="44" rx="10" fill="#ffffff" opacity="0.1"/>
+    <text x="37" y="149" class="tiny" fill="#ffffff" opacity="0.35">01</text>
+    <text x="69" y="149" class="body" fill="#ffffff">运营总览</text>
+    <text x="37" y="196" class="tiny" fill="#ffffff" opacity="0.35">02</text>
+    <text x="69" y="196" class="body" fill="#ffffff" opacity="0.7">订单履约</text>
+    <text x="37" y="243" class="tiny" fill="#ffffff" opacity="0.35">03</text>
+    <text x="69" y="243" class="body" fill="#ffffff" opacity="0.7">新建任务</text>
+    <text x="37" y="290" class="tiny" fill="#ffffff" opacity="0.35">04</text>
+    <text x="69" y="290" class="body" fill="#ffffff" opacity="0.7">API 文档</text>
+
+    <rect x="20" y="727" width="205" height="145" rx="14" fill="#ffffff" opacity="0.07" stroke="#ffffff" stroke-opacity="0.12"/>
+    <text x="37" y="752" class="tiny" fill="#ffffff" opacity="0.38">CURRENT ENVIRONMENT</text>
+    <circle cx="40" cy="779" r="4" fill="#7ad38d"/>
+    <text x="52" y="783" class="small" font-weight="700" fill="#ffffff">本地演示环境</text>
+    <text x="37" y="807" class="small" fill="#ffffff" opacity="0.52">平台、ERP 与飞书使用</text>
+    <text x="37" y="825" class="small" fill="#ffffff" opacity="0.52">确定性 Mock 适配器</text>
+    <rect x="37" y="840" width="78" height="20" rx="10" fill="#d9f06f"/>
+    <text x="76" y="854" text-anchor="middle" font-size="9" font-weight="800" fill="#52631c">MOCK MODE</text>
+
+    <g transform="translate(295 38)">
+      <text x="0" y="9" class="tiny muted">OPERATIONS CONTROL CENTER</text>
+      <text x="0" y="58" class="serif" font-size="42" fill="#17211b">跨境电商运营中心</text>
+      <text x="0" y="83" class="body muted">从平台订单到库存、审批和履约，一条链路完成追踪。</text>
+      <circle cx="805" cy="40" r="4" fill="#65bd7a"/>
+      <text x="817" y="44" class="small muted">API 正常</text>
+      <rect x="890" y="19" width="92" height="42" rx="9" fill="#ffffff" stroke="#dfe5df"/>
+      <text x="936" y="45" text-anchor="middle" class="small" font-weight="700" fill="#17211b">刷新数据</text>
+      <rect x="992" y="19" width="124" height="42" rx="9" fill="#235c45"/>
+      <text x="1054" y="45" text-anchor="middle" class="small" font-weight="700" fill="#ffffff">新建运营任务</text>
+    </g>
+
+    <g transform="translate(295 155)">
+      <g filter="url(#shadow)">
+        <rect width="260" height="132" rx="15" fill="#ffffff" stroke="#dfe5df"/>
+        <rect width="260" height="3" rx="2" fill="#2876d2"/>
+        <text x="20" y="31" class="small muted">全部任务</text>
+        <text x="20" y="77" class="serif" font-size="38" fill="#17211b">12</text>
+        <text x="20" y="106" class="small muted">订单工作流累计执行</text>
+      </g>
+      <g transform="translate(275)" filter="url(#shadow)">
+        <rect width="260" height="132" rx="15" fill="#ffffff" stroke="#dfe5df"/>
+        <rect width="260" height="3" rx="2" fill="#c37b13"/>
+        <text x="20" y="31" class="small muted">待人工审核</text>
+        <text x="20" y="77" class="serif" font-size="38" fill="#17211b">3</text>
+        <text x="20" y="106" class="small muted">外部写操作尚未放行</text>
+      </g>
+      <g transform="translate(550)" filter="url(#shadow)">
+        <rect width="260" height="132" rx="15" fill="#ffffff" stroke="#dfe5df"/>
+        <rect width="260" height="3" rx="2" fill="#3b9562"/>
+        <text x="20" y="31" class="small muted">执行完成</text>
+        <text x="20" y="77" class="serif" font-size="38" fill="#17211b">8</text>
+        <text x="20" y="106" class="small muted">库存与平台步骤已完成</text>
+      </g>
+      <g transform="translate(825)" filter="url(#shadow)">
+        <rect width="260" height="132" rx="15" fill="#ffffff" stroke="#dfe5df"/>
+        <rect width="260" height="3" rx="2" fill="#b6473d"/>
+        <text x="20" y="31" class="small muted">风险任务</text>
+        <text x="20" y="77" class="serif" font-size="38" fill="#17211b">2</text>
+        <text x="20" y="106" class="small muted">库存不足或执行异常</text>
+      </g>
+    </g>
+
+    <g transform="translate(295 309)" filter="url(#shadow)">
+      <rect width="735" height="346" rx="16" fill="#ffffff" stroke="#dfe5df"/>
+      <text x="22" y="28" class="tiny muted">AGENT RUNS</text>
+      <text x="22" y="55" font-size="18" class="heading">订单运营任务</text>
+      <rect x="601" y="20" width="112" height="36" rx="8" fill="#fbfcfa" stroke="#d8dfd9"/>
+      <text x="617" y="43" class="small muted">全部状态⌄</text>
+      <line x1="0" y1="73" x2="735" y2="73" stroke="#dfe5df"/>
+      <rect x="1" y="74" width="733" height="38" fill="#fafbf9"/>
+      <text x="18" y="98" class="tiny muted">订单</text>
+      <text x="205" y="98" class="tiny muted">平台</text>
+      <text x="325" y="98" class="tiny muted">AGENT 建议</text>
+      <text x="505" y="98" class="tiny muted">状态</text>
+      <text x="630" y="98" class="tiny muted">风险</text>
+
+      <rect x="1" y="112" width="733" height="72" fill="#f2f7f2"/>
+      <text x="18" y="139" class="small heading">AMZ-2026-0812</text>
+      <text x="18" y="159" class="tiny muted">US · 2 个 SKU</text>
+      <rect x="205" y="130" width="66" height="23" rx="12" fill="#eaf3fb"/>
+      <text x="238" y="145" text-anchor="middle" font-size="9" fill="#31587b">Amazon</text>
+      <text x="325" y="145" class="small" fill="#17211b">预占库存并履约</text>
+      <rect x="505" y="130" width="65" height="23" rx="12" fill="#fff0d7"/>
+      <text x="538" y="145" text-anchor="middle" font-size="9" fill="#8f5a0c">待审核</text>
+      <rect x="630" y="130" width="47" height="23" rx="12" fill="#edf2ee"/>
+      <text x="653" y="145" text-anchor="middle" font-size="9" fill="#567064">正常</text>
+
+      <line x1="0" y1="184" x2="735" y2="184" stroke="#edf0ed"/>
+      <text x="18" y="213" class="small heading">TTS-2026-0341</text>
+      <text x="18" y="233" class="tiny muted">SG · 1 个 SKU</text>
+      <rect x="205" y="204" width="87" height="23" rx="12" fill="#eaf3fb"/>
+      <text x="249" y="219" text-anchor="middle" font-size="9" fill="#31587b">TikTok Shop</text>
+      <text x="325" y="219" class="small" fill="#17211b">创建补货任务</text>
+      <rect x="505" y="204" width="65" height="23" rx="12" fill="#e1f3e8"/>
+      <text x="538" y="219" text-anchor="middle" font-size="9" fill="#266343">已完成</text>
+      <rect x="630" y="204" width="63" height="23" rx="12" fill="#fae8e5"/>
+      <text x="662" y="219" text-anchor="middle" font-size="9" fill="#994239">2 项风险</text>
+
+      <line x1="0" y1="256" x2="735" y2="256" stroke="#edf0ed"/>
+      <text x="18" y="285" class="small heading">AMZ-2026-0808</text>
+      <text x="18" y="305" class="tiny muted">GB · 1 个 SKU</text>
+      <rect x="205" y="276" width="66" height="23" rx="12" fill="#eaf3fb"/>
+      <text x="238" y="291" text-anchor="middle" font-size="9" fill="#31587b">Amazon</text>
+      <text x="325" y="291" class="small" fill="#17211b">预占库存并履约</text>
+      <rect x="505" y="276" width="65" height="23" rx="12" fill="#e1f3e8"/>
+      <text x="538" y="291" text-anchor="middle" font-size="9" fill="#266343">已完成</text>
+      <rect x="630" y="276" width="47" height="23" rx="12" fill="#edf2ee"/>
+      <text x="653" y="291" text-anchor="middle" font-size="9" fill="#567064">正常</text>
+    </g>
+
+    <g transform="translate(1048 309)" filter="url(#shadow)">
+      <rect width="337" height="346" rx="16" fill="#ffffff" stroke="#dfe5df"/>
+      <text x="20" y="28" class="tiny muted">QUICK DEMO</text>
+      <text x="20" y="55" font-size="18" class="heading">创建运营任务</text>
+      <rect x="238" y="22" width="77" height="20" rx="10" fill="#d9f06f"/>
+      <text x="276" y="36" text-anchor="middle" font-size="9" font-weight="800" fill="#52631c">SAFE MOCK</text>
+      <line x1="0" y1="73" x2="337" y2="73" stroke="#dfe5df"/>
+      <text x="20" y="100" class="tiny muted">销售平台</text>
+      <text x="178" y="100" class="tiny muted">买家区域</text>
+      <rect x="20" y="109" width="143" height="38" rx="8" fill="#fbfcfa" stroke="#d8dfd9"/>
+      <rect x="177" y="109" width="140" height="38" rx="8" fill="#fbfcfa" stroke="#d8dfd9"/>
+      <text x="33" y="133" class="small">Amazon⌄</text>
+      <text x="190" y="133" class="small">美国 US⌄</text>
+      <text x="20" y="170" class="tiny muted">平台订单号</text>
+      <rect x="20" y="179" width="297" height="38" rx="8" fill="#fbfcfa" stroke="#d8dfd9"/>
+      <text x="33" y="203" class="small">AMZ-DEMO-001</text>
+      <text x="20" y="240" class="tiny muted">商品 SKU</text>
+      <rect x="20" y="249" width="297" height="38" rx="8" fill="#fbfcfa" stroke="#d8dfd9"/>
+      <text x="33" y="273" class="small">OPS-CUP-001</text>
+      <rect x="20" y="302" width="297" height="40" rx="9" fill="#235c45"/>
+      <text x="168" y="327" text-anchor="middle" class="small" font-weight="700" fill="#ffffff">创建并运行 Agent</text>
+    </g>
+
+    <g transform="translate(295 676)" filter="url(#shadow)">
+      <rect width="1090" height="184" rx="16" fill="#ffffff" stroke="#dfe5df"/>
+      <text x="22" y="29" class="tiny muted">RUN 7BE8…A21F</text>
+      <text x="22" y="57" font-size="20" class="heading">AMZ-2026-0812 · 预占库存并履约</text>
+      <text x="22" y="80" class="small muted">所有 SKU 可用库存充足，建议预占库存并创建平台履约任务。</text>
+      <rect x="920" y="27" width="68" height="36" rx="9" fill="#fff4f2" stroke="#f0d1cc"/>
+      <text x="954" y="50" text-anchor="middle" class="small" fill="#b6473d">拒绝</text>
+      <rect x="998" y="27" width="72" height="36" rx="9" fill="#235c45"/>
+      <text x="1034" y="50" text-anchor="middle" class="small" fill="#ffffff">批准方案</text>
+      <rect x="22" y="102" width="330" height="61" rx="10" fill="#fafbf9" stroke="#e4e9e4"/>
+      <text x="38" y="125" class="label">库存证据</text>
+      <text x="38" y="149" class="small muted">OPS-CUP-001 · 需求 2 / 可用 20 / 缺口 0</text>
+      <rect x="368" y="102" width="330" height="61" rx="10" fill="#fafbf9" stroke="#e4e9e4"/>
+      <text x="384" y="125" class="label">风险与审批</text>
+      <text x="384" y="149" class="small muted">未发现阻断风险 · 等待 reviewer-b</text>
+      <rect x="714" y="102" width="356" height="61" rx="10" fill="#fafbf9" stroke="#e4e9e4"/>
+      <text x="730" y="125" class="label">Agent 执行轨迹</text>
+      <text x="730" y="149" class="small muted">校验订单 → 读取库存 → 决策 → 人工审核</text>
+    </g>
+  </g>
+</svg>
