@@ -4,7 +4,13 @@
 
 当前版本已完成七个阶段：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟外部 ID 均带有 `mock-` 前缀。
 
-![MarketCraft AI 运营控制台预览](docs/assets/dashboard-preview.svg)
+## Product preview
+
+| 运营总览 | 四眼审批 |
+| --- | --- |
+| ![运营控制台总览](docs/assets/dashboard-preview.svg) | ![订单人工审批](docs/assets/approval-preview.svg) |
+| **库存异常与补货** | **执行结果与审计** |
+| ![库存不足与补货决策](docs/assets/restock-preview.svg) | ![外部系统执行结果](docs/assets/execution-preview.svg) |
 
 ## Core workflow
 

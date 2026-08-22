@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">MarketCraft AI 库存不足与补货决策演示</title>
+  <desc id="desc">TikTok Shop 订单库存不足时，Agent 阻断履约并建议创建补货任务</desc>
+  <defs><filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#173c2e" flood-opacity=".08"/></filter><style>.ui{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}.serif{font-family:Georgia,"Songti SC",serif}.ink{fill:#17211b}.muted{fill:#6d7771}.tiny{font-size:10px;letter-spacing:1.4px}.small{font-size:12px}.body{font-size:14px}.strong{font-weight:700}</style></defs>
+  <rect width="1280" height="720" fill="#f4f3ef"/><circle cx="1150" cy="70" r="230" fill="#f5d3c8" opacity=".24"/>
+  <g class="ui">
+    <rect width="212" height="720" fill="#153c2e"/><rect x="24" y="24" width="40" height="40" rx="11" fill="#d9f06f"/><text x="44" y="51" text-anchor="middle" font-size="19" font-weight="800" fill="#174532">M</text><text x="76" y="42" font-size="16" class="strong" fill="#fff">MarketCraft</text><text x="76" y="58" class="tiny" fill="#fff" opacity=".45">AI OPERATIONS</text>
+    <text x="31" y="130" class="tiny" fill="#fff" opacity=".35">01</text><text x="63" y="130" class="body" fill="#fff" opacity=".65">运营总览</text><rect x="16" y="153" width="180" height="42" rx="10" fill="#fff" opacity=".1"/><text x="31" y="179" class="tiny" fill="#fff" opacity=".4">02</text><text x="63" y="179" class="body" fill="#fff">库存异常</text><text x="31" y="228" class="tiny" fill="#fff" opacity=".35">03</text><text x="63" y="228" class="body" fill="#fff" opacity=".65">补货任务</text>
+    <rect x="16" y="594" width="180" height="102" rx="13" fill="#fff" opacity=".07" stroke="#fff" stroke-opacity=".12"/><text x="31" y="621" class="tiny" fill="#fff" opacity=".45">SAFETY BOUNDARY</text><text x="31" y="648" class="small" fill="#fff">库存不足时自动阻断</text><text x="31" y="670" class="small" fill="#fff" opacity=".62">不创建平台履约任务</text>
+
+    <g transform="translate(252 31)">
+      <text y="10" class="tiny muted">INVENTORY EXCEPTION / RESTOCK PLAN</text><text y="53" class="serif ink" font-size="36">库存异常处理</text><text y="78" class="body muted">Agent 使用 ERP 实时证据计算缺口，库存不足时切换到补货分支。</text>
+      <rect x="843" y="15" width="144" height="40" rx="20" fill="#fae8e5"/><circle cx="867" cy="35" r="4" fill="#c45c50"/><text x="881" y="40" class="small strong" fill="#994239">履约已阻断</text>
+
+      <g transform="translate(0 112)" filter="url(#s)"><rect width="988" height="104" rx="16" fill="#fff" stroke="#dfe5df"/><text x="22" y="29" class="tiny muted">TIKTOK SHOP ORDER</text><text x="22" y="61" font-size="23" class="ink strong">TTS-2026-0341</text><text x="22" y="84" class="small muted">SG · OPS-CUP-001 × 4</text><line x1="330" y1="18" x2="330" y2="86" stroke="#e6eae6"/><text x="358" y="31" class="tiny muted">DECISION</text><text x="358" y="61" class="body strong" fill="#994239">创建 ERP 补货任务，暂停平台履约</text><rect x="800" y="36" width="160" height="31" rx="16" fill="#fae8e5"/><text x="880" y="56" text-anchor="middle" class="small" fill="#994239">inventory_shortage</text></g>
+
+      <g transform="translate(0 238)" filter="url(#s)"><rect width="590" height="244" rx="16" fill="#fff" stroke="#dfe5df"/><text x="20" y="29" class="tiny muted">STOCK COMPARISON</text><text x="20" y="58" font-size="17" class="ink strong">库存缺口分析</text>
+        <text x="22" y="96" class="small muted">订单需求</text><rect x="122" y="82" width="410" height="22" rx="11" fill="#edf0ed"/><rect x="122" y="82" width="410" height="22" rx="11" fill="#2876d2"/><text x="548" y="98" class="small strong ink">4</text>
+        <text x="22" y="144" class="small muted">可用库存</text><rect x="122" y="130" width="410" height="22" rx="11" fill="#edf0ed"/><rect x="122" y="130" width="103" height="22" rx="11" fill="#c37b13"/><text x="548" y="146" class="small strong ink">1</text>
+        <text x="22" y="192" class="small muted">库存缺口</text><rect x="122" y="178" width="410" height="22" rx="11" fill="#edf0ed"/><rect x="122" y="178" width="308" height="22" rx="11" fill="#b6473d"/><text x="548" y="194" class="small strong" fill="#994239">3</text>
+        <rect x="20" y="215" width="550" height="17" rx="8" fill="#fff4f2"/><text x="295" y="227" text-anchor="middle" font-size="9" fill="#994239">执行前二次库存校验仍会保留，避免基于旧快照履约</text>
+      </g>
+
+      <g transform="translate(610 238)" filter="url(#s)"><rect width="378" height="244" rx="16" fill="#fff" stroke="#dfe5df"/><text x="20" y="29" class="tiny muted">RESTOCK PROPOSAL</text><text x="20" y="58" font-size="17" class="ink strong">补货方案</text>
+        <rect x="20" y="78" width="338" height="62" rx="11" fill="#f8faf7" stroke="#e5eae5"/><text x="36" y="101" class="tiny muted">TARGET SKU</text><text x="36" y="126" class="body strong ink">OPS-CUP-001</text><text x="335" y="116" text-anchor="end" font-size="26" class="serif" fill="#b6473d">+3</text>
+        <text x="20" y="170" class="small muted">推荐动作</text><text x="348" y="170" text-anchor="end" class="small strong ink">create_restock_task</text><text x="20" y="199" class="small muted">目标系统</text><text x="348" y="199" text-anchor="end" class="small strong ink">ERP Mock Gateway</text><rect x="20" y="211" width="338" height="31" rx="8" fill="#235c45"/><text x="189" y="231" text-anchor="middle" class="small strong" fill="#fff">批准并创建补货任务</text>
+      </g>
+
+      <g transform="translate(0 503)" filter="url(#s)"><rect width="988" height="125" rx="16" fill="#fff" stroke="#dfe5df"/><text x="20" y="29" class="tiny muted">DECISION TRACE</text><text x="20" y="55" font-size="17" class="ink strong">为什么没有创建履约？</text><rect x="20" y="72" width="204" height="35" rx="9" fill="#edf3ef"/><text x="122" y="94" text-anchor="middle" class="small muted">1. 订单数量 4</text><text x="242" y="94" class="body muted">→</text><rect x="265" y="72" width="204" height="35" rx="9" fill="#fff0d7"/><text x="367" y="94" text-anchor="middle" class="small" fill="#8f5a0c">2. 可用库存 1</text><text x="487" y="94" class="body muted">→</text><rect x="510" y="72" width="204" height="35" rx="9" fill="#fae8e5"/><text x="612" y="94" text-anchor="middle" class="small" fill="#994239">3. 计算缺口 3</text><text x="732" y="94" class="body muted">→</text><rect x="755" y="72" width="213" height="35" rx="9" fill="#153c2e"/><text x="861" y="94" text-anchor="middle" class="small strong" fill="#fff">4. 阻断履约并补货</text></g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="title desc">
+  <title id="title">MarketCraft AI 人工审批演示</title>
+  <desc id="desc">Amazon 订单库存证据、Agent 履约建议和四眼审批界面</desc>
+  <defs>
+    <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="9" stdDeviation="12" flood-color="#173c2e" flood-opacity=".08"/></filter>
+    <style>
+      .ui{font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif}.serif{font-family:Georgia,"Songti SC",serif}.ink{fill:#17211b}.muted{fill:#6d7771}.tiny{font-size:10px;letter-spacing:1.4px}.small{font-size:12px}.body{font-size:14px}.strong{font-weight:700}
+    </style>
+  </defs>
+  <rect width="1280" height="720" fill="#f3f5f1"/>
+  <circle cx="1180" cy="30" r="220" fill="#d9f06f" opacity=".13"/>
+  <g class="ui">
+    <rect width="212" height="720" fill="#153c2e"/>
+    <rect x="24" y="24" width="40" height="40" rx="11" fill="#d9f06f"/><text x="44" y="51" text-anchor="middle" font-size="19" font-weight="800" fill="#174532">M</text>
+    <text x="76" y="42" font-size="16" class="strong" fill="#fff">MarketCraft</text><text x="76" y="58" class="tiny" fill="#fff" opacity=".45">AI OPERATIONS</text>
+    <rect x="16" y="109" width="180" height="42" rx="10" fill="#fff" opacity=".1"/><text x="32" y="135" class="tiny" fill="#fff" opacity=".4">02</text><text x="63" y="135" class="body" fill="#fff">订单履约</text>
+    <text x="32" y="186" class="tiny" fill="#fff" opacity=".35">03</text><text x="63" y="186" class="body" fill="#fff" opacity=".65">人工审核</text>
+    <text x="32" y="237" class="tiny" fill="#fff" opacity=".35">04</text><text x="63" y="237" class="body" fill="#fff" opacity=".65">执行结果</text>
+    <rect x="16" y="601" width="180" height="95" rx="13" fill="#fff" opacity=".07" stroke="#fff" stroke-opacity=".12"/><circle cx="33" cy="626" r="4" fill="#7ad38d"/><text x="45" y="630" class="small" fill="#fff">Mock 环境</text><text x="32" y="654" class="tiny" fill="#fff" opacity=".5">FOUR-EYES POLICY</text><text x="32" y="676" class="small" fill="#fff" opacity=".7">提交人与审核人分离</text>
+
+    <g transform="translate(252 31)">
+      <text class="tiny muted" y="10">ORDER OPERATION / PENDING REVIEW</text>
+      <text y="53" class="serif ink" font-size="36">人工审批中心</text>
+      <text y="78" class="body muted">基于库存证据审核 Agent 建议，批准前不会执行外部写操作。</text>
+      <rect x="834" y="15" width="153" height="40" rx="20" fill="#fff0d7"/><circle cx="858" cy="35" r="4" fill="#d18a1e"/><text x="873" y="40" class="small" font-weight="700" fill="#8f5a0c">等待人工审核</text>
+
+      <g transform="translate(0 112)" filter="url(#s)">
+        <rect width="988" height="112" rx="16" fill="#fff" stroke="#dfe5df"/>
+        <text x="22" y="28" class="tiny muted">AMAZON ORDER</text><text x="22" y="61" font-size="23" class="ink strong">AMZ-2026-0812</text><text x="22" y="87" class="small muted">US · 2 个 SKU · 创建于 2026-08-22 15:42</text>
+        <line x1="315" y1="20" x2="315" y2="92" stroke="#e5eae5"/>
+        <text x="342" y="30" class="tiny muted">AGENT RECOMMENDATION</text><text x="342" y="59" class="body strong" fill="#235c45">预占库存并创建平台履约任务</text><text x="342" y="84" class="small muted">全部商品库存充足，执行后仍高于补货线。</text>
+        <rect x="835" y="37" width="126" height="32" rx="16" fill="#e1f3e8"/><text x="898" y="57" text-anchor="middle" class="small" font-weight="700" fill="#266343">风险检查通过</text>
+      </g>
+
+      <g transform="translate(0 244)" filter="url(#s)">
+        <rect width="630" height="210" rx="16" fill="#fff" stroke="#dfe5df"/>
+        <text x="20" y="29" class="tiny muted">INVENTORY EVIDENCE</text><text x="20" y="57" font-size="17" class="ink strong">ERP 库存证据</text>
+        <rect x="20" y="77" width="590" height="32" rx="7" fill="#fafbf9"/><text x="33" y="98" class="tiny muted">SKU</text><text x="225" y="98" class="tiny muted">仓库</text><text x="350" y="98" class="tiny muted">需求</text><text x="432" y="98" class="tiny muted">可用</text><text x="515" y="98" class="tiny muted">缺口</text>
+        <text x="33" y="137" class="small strong ink">OPS-CUP-001</text><text x="225" y="137" class="small muted">US-WEST</text><text x="365" y="137" class="small ink">2</text><text x="447" y="137" class="small ink">20</text><text x="530" y="137" class="small" fill="#29704c">0</text>
+        <line x1="20" y1="154" x2="610" y2="154" stroke="#edf0ed"/>
+        <text x="33" y="184" class="small strong ink">OPS-LID-002</text><text x="225" y="184" class="small muted">US-WEST</text><text x="365" y="184" class="small ink">1</text><text x="447" y="184" class="small ink">12</text><text x="530" y="184" class="small" fill="#29704c">0</text>
+      </g>
+
+      <g transform="translate(650 244)" filter="url(#s)">
+        <rect width="338" height="210" rx="16" fill="#fff" stroke="#dfe5df"/>
+        <text x="20" y="29" class="tiny muted">APPROVAL CONTROL</text><text x="20" y="57" font-size="17" class="ink strong">四眼审批</text>
+        <text x="20" y="89" class="small muted">提交人</text><text x="310" y="89" text-anchor="end" class="small strong ink">operations-agent</text>
+        <text x="20" y="118" class="small muted">审核人</text><text x="310" y="118" text-anchor="end" class="small strong ink">reviewer-b</text>
+        <text x="20" y="147" class="small muted">飞书通知</text><text x="310" y="147" text-anchor="end" class="tiny" fill="#64751e">MOCK 已生成</text>
+        <rect x="20" y="165" width="100" height="32" rx="8" fill="#fff4f2" stroke="#f0d1cc"/><text x="70" y="186" text-anchor="middle" class="small" fill="#b6473d">拒绝</text>
+        <rect x="130" y="165" width="180" height="32" rx="8" fill="#235c45"/><text x="220" y="186" text-anchor="middle" class="small strong" fill="#fff">批准运营方案</text>
+      </g>
+
+      <g transform="translate(0 474)" filter="url(#s)">
+        <rect width="988" height="150" rx="16" fill="#fff" stroke="#dfe5df"/>
+        <text x="20" y="29" class="tiny muted">LANGGRAPH TRACE</text><text x="20" y="55" font-size="17" class="ink strong">Agent 执行轨迹</text>
+        <line x1="84" y1="101" x2="892" y2="101" stroke="#cfd9d1" stroke-width="2"/>
+        <g fill="#235c45"><circle cx="84" cy="101" r="10"/><circle cx="354" cy="101" r="10"/><circle cx="624" cy="101" r="10"/></g><circle cx="892" cy="101" r="10" fill="#fff" stroke="#c37b13" stroke-width="3"/>
+        <text x="84" y="132" text-anchor="middle" class="small muted">校验订单</text><text x="354" y="132" text-anchor="middle" class="small muted">读取 ERP 库存</text><text x="624" y="132" text-anchor="middle" class="small muted">生成履约建议</text><text x="892" y="132" text-anchor="middle" class="small" fill="#8f5a0c">等待人工审核</text>
+      </g>
+    </g>
+  </g>
+</svg>
