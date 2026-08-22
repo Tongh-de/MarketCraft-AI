@@ -1,0 +1,2 @@
+"""MarketCraft AI application package."""
+

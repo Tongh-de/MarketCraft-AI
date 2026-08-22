@@ -1,0 +1,31 @@
+### Health check
+GET http://localhost:8000/health
+
+### Generate a campaign package
+POST http://localhost:8000/api/v1/campaigns/generate
+Content-Type: application/json
+X-Thread-ID: demo-thread-001
+
+{
+  "product": {
+    "sku": "CUP-001",
+    "name": "轻盈随行保温杯",
+    "category": "咖啡杯",
+    "description": "一款适合通勤与办公室使用的不锈钢保温杯，杯盖可拆洗。",
+    "attributes": {
+      "容量": "450ml",
+      "材质": "食品接触级不锈钢",
+      "保温": "6小时",
+      "重量": "约280g"
+    },
+    "target_audience": "需要日常通勤和办公室饮水的年轻用户",
+    "price": 129.0,
+    "image_urls": []
+  },
+  "brand_id": "demo-brand",
+  "platforms": ["xiaohongshu", "douyin"],
+  "tone": "friendly",
+  "objective": "新品种草与转化",
+  "forbidden_claims": ["治愈", "全网最低"]
+}
+
