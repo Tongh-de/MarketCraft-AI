@@ -2,6 +2,7 @@ from functools import lru_cache
 
 from app.domain.creation import CreativeCapability, PluginDescriptor
 from app.plugins.base import CreativePlugin, CreativePluginError
+from app.plugins.mock_competitor_vision import MockCompetitorVisionPlugin
 from app.plugins.mock_creative import (
     build_mock_comfyui_plugin,
     build_mock_jimeng_plugin,
@@ -10,7 +11,11 @@ from app.plugins.mock_creative import (
 
 class CreativePluginRegistry:
     def __init__(self, plugins: list[CreativePlugin] | None = None) -> None:
-        installed = plugins or [build_mock_comfyui_plugin(), build_mock_jimeng_plugin()]
+        installed = plugins or [
+            build_mock_comfyui_plugin(),
+            build_mock_jimeng_plugin(),
+            MockCompetitorVisionPlugin(),
+        ]
         self._plugins = {plugin.descriptor.plugin_id: plugin for plugin in installed}
 
     def list_descriptors(self) -> list[PluginDescriptor]:

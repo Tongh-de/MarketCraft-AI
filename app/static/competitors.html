@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 竞品视觉分析工作台" />
+    <title>MarketCraft AI · 竞品视觉分析</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/competitors.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/studio"><span class="brand-mark">M</span><span><strong>MarketCraft</strong><small>AI INSIGHTS</small></span></a>
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item active" href="/competitors"><span>◉</span>竞品视觉分析</a>
+          <a class="nav-item" href="#report"><span>▤</span>分析报告</a>
+          <a class="nav-item" href="#briefs"><span>◇</span>创作方案</a>
+          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
+        </nav>
+        <div class="environment-card">
+          <div class="eyebrow light">ANALYSIS BOUNDARY</div>
+          <strong><i class="pulse"></i>Mock 视觉分析</strong>
+          <p>当前报告验证业务结构，不会把模板分析冒充真实图片识别结果。</p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div><div class="eyebrow">COMPETITOR VISUAL INTELLIGENCE</div><h1>竞品视觉分析工作台</h1><p>提取通用视觉规律，生成原创差异化策略，不直接复制竞品素材。</p></div>
+          <div class="live-badges"><span>竞品图最多 8 张</span><span><i class="pulse"></i>合规模式</span></div>
+        </header>
+
+        <section class="competitor-layout">
+          <article class="panel analysis-input">
+            <div class="panel-heading"><div><div class="eyebrow">ANALYSIS INPUT</div><h2>上传对标素材</h2></div><span class="mode-chip">1 + N</span></div>
+            <form id="competitorForm">
+              <div class="upload-section">
+                <label><span>自己的商品图</span></label>
+                <label class="compact-dropzone">
+                  <input id="ownImage" type="file" accept="image/png,image/jpeg,image/webp" required />
+                  <img id="ownPreview" alt="自己的商品图预览" hidden />
+                  <span id="ownPlaceholder"><b>＋</b><strong>上传商品图</strong><small>用于建立我方基准</small></span>
+                </label>
+              </div>
+              <div class="upload-section">
+                <label><span>竞品图片</span></label>
+                <label class="competitor-dropzone">
+                  <input id="competitorImages" type="file" accept="image/png,image/jpeg,image/webp" multiple required />
+                  <b>＋ 添加竞品图片</b><small>可一次选择 1–8 张</small>
+                </label>
+                <div class="preview-strip" id="competitorPreviews"><p class="muted">尚未选择竞品图</p></div>
+              </div>
+              <div class="form-row">
+                <label><span>商品名称</span><input name="name" value="轻盈通勤夹克" required maxlength="120" /></label>
+                <label><span>SKU</span><input name="sku" value="JACKET-001" required maxlength="64" /></label>
+              </div>
+              <label><span>商品品类</span><input name="category" value="女装外套" required maxlength="80" /></label>
+              <label><span>目标人群</span><input name="audience" value="城市通勤女性" required maxlength="300" /></label>
+              <label><span>分析要求</span><textarea name="instruction" required>分析竞品图片的构图、色彩、场景和卖点表达，并给出不复制竞品的差异化创作建议。</textarea></label>
+              <button class="button primary full" id="analyzeButton" type="submit">◉ 开始竞品分析</button>
+            </form>
+          </article>
+
+          <section class="report-column" id="report">
+            <article class="panel report-panel">
+              <div class="panel-heading"><div><div class="eyebrow">STRUCTURED REPORT</div><h2>竞品对比报告</h2></div><span class="status-chip" id="reportStatus">等待分析</span></div>
+              <div class="report-empty" id="reportEmpty"><div class="empty-spark">◉</div><h3>上传自己的商品图和竞品图</h3><p>完成后将生成对比维度、机会点和三套差异化创作方案。</p></div>
+              <div id="reportContent" hidden>
+                <div class="mock-warning" id="mockWarning"></div>
+                <div class="report-summary" id="reportSummary"></div>
+                <div class="comparison-table-wrap">
+                  <table class="comparison-table"><thead><tr><th>对比维度</th><th>竞品规律</th><th>我方差距</th><th>AI 建议</th></tr></thead><tbody id="dimensionBody"></tbody></table>
+                </div>
+                <section class="opportunity-section"><h3>可执行机会点</h3><ul id="opportunityList"></ul></section>
+              </div>
+            </article>
+
+            <article class="panel briefs-panel" id="briefs" hidden>
+              <div class="panel-heading compact"><div><div class="eyebrow">DIFFERENTIATED BRIEFS</div><h2>差异化创作方案</h2></div></div>
+              <div class="brief-grid" id="briefGrid"></div>
+            </article>
+
+            <div class="report-bottom-grid">
+              <article class="panel compliance-panel"><div class="eyebrow">COMPLIANCE</div><h2>合规边界</h2><ul id="complianceList"><li>不复制竞品图片、商标、文案或独特版式。</li></ul></article>
+              <article class="panel trace-panel"><div class="eyebrow">EXECUTION TRACE</div><h2>执行轨迹</h2><ol id="analysisTrace"><li class="muted">等待分析任务</li></ol></article>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/competitors.js" defer></script>
+  </body>
+</html>

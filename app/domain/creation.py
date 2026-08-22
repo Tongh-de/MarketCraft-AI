@@ -20,6 +20,7 @@ class CreativeCapability(StrEnum):
     VIRTUAL_TRY_ON = "virtual_try_on"
     POSTER_GENERATION = "poster_generation"
     VIDEO_GENERATION = "video_generation"
+    COMPETITOR_ANALYSIS = "competitor_analysis"
 
 
 class CreationTaskStatus(StrEnum):
@@ -142,4 +143,68 @@ class CreationTask(BaseModel):
     trace: list[str] = Field(default_factory=list)
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    completed_at: datetime | None = None
+
+
+class CompetitorImageInput(BaseModel):
+    label: str = Field(min_length=1, max_length=100)
+    image_url: str = Field(min_length=4, max_length=2000)
+
+
+class CompetitorAnalysisRequest(BaseModel):
+    product: CreativeProductInput
+    competitor_images: list[CompetitorImageInput] = Field(min_length=1, max_length=8)
+    instruction: str = Field(
+        default="分析竞品视觉规律并生成差异化创作建议",
+        min_length=2,
+        max_length=2000,
+    )
+    preferred_plugin_id: str | None = Field(default=None, min_length=2, max_length=80)
+    actor: str = Field(default="creative-strategist", min_length=2, max_length=100)
+
+
+class CompetitorAnalysisDimension(BaseModel):
+    dimension: str
+    competitor_pattern: str
+    own_product_gap: str
+    recommendation: str
+    confidence: float = Field(ge=0, le=1)
+
+
+class DifferentiatedCreativeBrief(BaseModel):
+    name: str
+    visual_direction: str
+    composition: str
+    copy_angle: str
+    differentiation: str
+
+
+class CompetitorPluginResult(BaseModel):
+    plugin_id: str
+    summary: str
+    dimensions: list[CompetitorAnalysisDimension]
+    opportunities: list[str]
+    creative_briefs: list[DifferentiatedCreativeBrief]
+    trace: list[str]
+    mock: bool
+
+
+class CompetitorAnalysisReport(BaseModel):
+    report_id: UUID = Field(default_factory=uuid4)
+    status: CreationTaskStatus = CreationTaskStatus.QUEUED
+    skill_id: str = "competitor-visual-analysis"
+    plugin_id: str | None = None
+    product: CreativeProductInput
+    competitor_images: list[CompetitorImageInput]
+    instruction: str
+    requested_by: str
+    summary: str = ""
+    dimensions: list[CompetitorAnalysisDimension] = Field(default_factory=list)
+    opportunities: list[str] = Field(default_factory=list)
+    creative_briefs: list[DifferentiatedCreativeBrief] = Field(default_factory=list)
+    compliance_notes: list[str] = Field(default_factory=list)
+    trace: list[str] = Field(default_factory=list)
+    mock: bool = True
+    error: str | None = None
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     completed_at: datetime | None = None

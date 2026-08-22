@@ -5,6 +5,8 @@ from uuid import UUID
 from fastapi import APIRouter, File, HTTPException, Query, Response, UploadFile, status
 
 from app.domain.creation import (
+    CompetitorAnalysisReport,
+    CompetitorAnalysisRequest,
     CreateCreationTaskRequest,
     CreationTask,
     PluginDescriptor,
@@ -12,6 +14,10 @@ from app.domain.creation import (
     UploadedProductImage,
 )
 from app.plugins.registry import get_creative_plugin_registry
+from app.services.competitor_analysis import (
+    CompetitorReportNotFoundError,
+    get_competitor_analysis_service,
+)
 from app.services.creation_tasks import (
     CreationTaskNotFoundError,
     get_creation_task_service,
@@ -30,6 +36,40 @@ def list_creative_plugins() -> list[PluginDescriptor]:
 @router.get("/skills", response_model=list[SkillDescriptor])
 def list_creative_skills() -> list[SkillDescriptor]:
     return get_skill_registry().list_descriptors()
+
+
+@router.post(
+    "/competitor-analyses",
+    response_model=CompetitorAnalysisReport,
+    status_code=status.HTTP_201_CREATED,
+)
+def create_competitor_analysis(
+    request: CompetitorAnalysisRequest,
+) -> CompetitorAnalysisReport:
+    return get_competitor_analysis_service().create(request)
+
+
+@router.get(
+    "/competitor-analyses",
+    response_model=list[CompetitorAnalysisReport],
+)
+def list_competitor_analyses(
+    limit: Annotated[int, Query(ge=1, le=200)] = 50,
+) -> list[CompetitorAnalysisReport]:
+    return get_competitor_analysis_service().list_reports(limit)
+
+
+@router.get(
+    "/competitor-analyses/{report_id}",
+    response_model=CompetitorAnalysisReport,
+)
+def get_competitor_analysis(report_id: UUID) -> CompetitorAnalysisReport:
+    try:
+        return get_competitor_analysis_service().get(report_id)
+    except CompetitorReportNotFoundError as error:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail=str(error)
+        ) from error
 
 
 @router.post(

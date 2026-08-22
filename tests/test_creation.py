@@ -45,10 +45,14 @@ def test_skill_and_plugin_catalogs_are_visible() -> None:
     assert {item["plugin_id"] for item in plugins.json()} == {
         "comfyui.mock",
         "jimeng.mock",
+        "multimodal-vision.mock",
     }
     assert all(item["mode"] == "mock" for item in plugins.json())
     assert skills.status_code == 200
-    assert skills.json()[0]["skill_id"] == "product-asset-generation"
+    assert {item["skill_id"] for item in skills.json()} == {
+        "product-asset-generation",
+        "competitor-visual-analysis",
+    }
 
 
 def test_create_and_get_mock_product_asset_task() -> None:
@@ -120,3 +124,41 @@ def test_upload_rejects_spoofed_image_content() -> None:
 
     assert response.status_code == 415
     assert "does not match" in response.json()["detail"]
+
+
+def test_create_and_get_mock_competitor_analysis() -> None:
+    response = client.post(
+        "/api/v1/creation/competitor-analyses",
+        json={
+            "product": {
+                "sku": "JACKET-COMP-001",
+                "name": "轻盈通勤夹克",
+                "category": "女装外套",
+                "source_image_url": "/uploads/own-product.png",
+                "target_audience": "城市通勤女性",
+            },
+            "competitor_images": [
+                {"label": "竞品 1", "image_url": "/uploads/competitor-1.png"},
+                {"label": "竞品 2", "image_url": "/uploads/competitor-2.png"},
+            ],
+            "instruction": "分析视觉规律并生成原创差异化方案。",
+            "preferred_plugin_id": "multimodal-vision.mock",
+            "actor": "test-strategist",
+        },
+    )
+
+    assert response.status_code == 201
+    report = response.json()
+    assert report["status"] == "completed"
+    assert report["plugin_id"] == "multimodal-vision.mock"
+    assert report["mock"] is True
+    assert len(report["dimensions"]) == 5
+    assert len(report["creative_briefs"]) == 3
+    assert "未真实读取图片像素" in report["summary"]
+    assert report["trace"][-1] == "report_completed"
+
+    fetched = client.get(
+        f"/api/v1/creation/competitor-analyses/{report['report_id']}"
+    )
+    assert fetched.status_code == 200
+    assert fetched.json()["report_id"] == report["report_id"]

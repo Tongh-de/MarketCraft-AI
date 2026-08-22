@@ -20,7 +20,7 @@ upload_dir = Path(settings.upload_dir).resolve()
 upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.5.0",
+    version="0.6.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -47,6 +47,11 @@ def dashboard() -> FileResponse:
 @app.get("/studio", include_in_schema=False)
 def studio() -> FileResponse:
     return FileResponse(static_dir / "studio.html")
+
+
+@app.get("/competitors", include_in_schema=False)
+def competitors() -> FileResponse:
+    return FileResponse(static_dir / "competitors.html")
 
 
 @app.get("/health", tags=["system"])

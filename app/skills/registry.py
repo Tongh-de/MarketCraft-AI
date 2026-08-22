@@ -2,12 +2,16 @@ from functools import lru_cache
 
 from app.domain.creation import SkillDescriptor
 from app.skills.base import EcommerceSkill, SkillNotFoundError
+from app.skills.competitor_analysis import CompetitorVisualAnalysisSkill
 from app.skills.product_assets import ProductAssetGenerationSkill
 
 
 class SkillRegistry:
     def __init__(self, skills: list[EcommerceSkill] | None = None) -> None:
-        installed = skills or [ProductAssetGenerationSkill()]
+        installed = skills or [
+            ProductAssetGenerationSkill(),
+            CompetitorVisualAnalysisSkill(),
+        ]
         self._skills = {skill.descriptor.skill_id: skill for skill in installed}
 
     def list_descriptors(self) -> list[SkillDescriptor]:

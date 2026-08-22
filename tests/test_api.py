@@ -36,6 +36,18 @@ def test_creation_studio_and_assets_are_served() -> None:
     assert script.status_code == 200
 
 
+def test_competitor_analysis_studio_is_served() -> None:
+    page = client.get("/competitors")
+    stylesheet = client.get("/static/competitors.css")
+    script = client.get("/static/competitors.js")
+
+    assert page.status_code == 200
+    assert "竞品视觉分析工作台" in page.text
+    assert "不直接复制竞品素材" in page.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")

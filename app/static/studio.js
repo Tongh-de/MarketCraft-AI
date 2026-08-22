@@ -44,7 +44,8 @@ elements.dropzone.addEventListener("drop", (event) => {
 
 function renderPlugins() {
   elements.pluginCount.textContent = `${state.plugins.length} 个插件已连接`;
-  elements.plugin.innerHTML = state.plugins.map((item) => `<option value="${escapeHtml(item.plugin_id)}">${escapeHtml(item.name)} · ${item.mode.toUpperCase()}</option>`).join("");
+  const generationPlugins = state.plugins.filter((item) => item.capabilities.some((capability) => capability !== "competitor_analysis"));
+  elements.plugin.innerHTML = generationPlugins.map((item) => `<option value="${escapeHtml(item.plugin_id)}">${escapeHtml(item.name)} · ${item.mode.toUpperCase()}</option>`).join("");
   elements.pluginList.innerHTML = state.plugins.map((item) => `
     <div class="plugin-item"><span class="plugin-icon">${escapeHtml(item.name.slice(0, 1))}</span>
       <span><strong>${escapeHtml(item.name)}</strong><small>${escapeHtml(item.capabilities.length)} 项能力 · ${escapeHtml(item.mode.toUpperCase())}</small></span><i class="online-dot"></i></div>`).join("");
