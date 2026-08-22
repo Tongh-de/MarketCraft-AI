@@ -2,7 +2,7 @@
 
 面向电商运营团队的多模态营销内容生产 Agent 平台。系统接收商品资料和图片，自动提取卖点、检索品牌规范、生成多平台文案与海报提示词，并通过质量审核节点输出可追溯的营销内容包。
 
-当前版本已完成 Phase 3：除多模态生成外，还加入品牌知识库、商品目录、BM25＋Dense 混合召回、RRF 重排和引用溯源。默认使用内存检索与 Mock 生成，无需外部服务即可演示；生产配置可切换 Milvus 和真实模型。
+当前版本已完成 Phase 4：系统已覆盖多模态生成、品牌 RAG、商品目录、人工审核、内容版本和多平台发布闭环。默认使用内存存储、Mock 生成和 Mock 发布，无需外部凭证即可演示；所有模拟结果均带有明确标识。
 
 ## Core workflow
 
@@ -32,6 +32,12 @@ flowchart LR
 - Milvus 原生 BM25 与多向量混合检索生产适配器
 - 商品目录的新增、更新、版本号和搜索接口
 - 生成结果携带文档 ID、来源和融合分数，支持引用溯源
+- Draft → Pending Review → Approved/Rejected → Published 审批状态机
+- 四眼原则：审核人与内容提交人必须不同
+- 内容修改生成不可变版本，重新审核后才能发布
+- 发布幂等键、单平台错误隔离和 Partial Failed（部分失败）状态
+- 小红书、抖音、淘宝、京东发布适配器接口及确定性 Mock 实现
+- 追加式审计日志，记录操作者、动作、版本和审核理由
 
 ## Quick start
 
@@ -80,6 +86,14 @@ docker compose up --build
 
 `POST /api/v1/products/search/query`：搜索商品目录。
 
+`POST /api/v1/campaigns/{id}/versions`：创建内容新版本。
+
+`POST /api/v1/campaigns/{id}/submit-review`：提交人工审核。
+
+`POST /api/v1/campaigns/{id}/decision`：批准或驳回当前版本。
+
+`POST /api/v1/campaigns/{id}/publish`：幂等发布已批准版本。
+
 真实模型模式：
 
 ```bash
@@ -107,7 +121,7 @@ MILVUS_TOKEN=root:Milvus
 | 1 | 商品输入 → 文案 → 海报 Prompt → 质检 | FastAPI、LangGraph、结构化输出、异常与质量控制 |
 | 2 ✅ | 商品图片理解、真实 LLM、海报生成 | 多模态模型、结构化输出、供应商抽象 |
 | 3 ✅ | 品牌 RAG、商品库、混合召回 | Milvus、BM25、RRF、引用溯源 |
-| 4 | 人工审核、版本管理、多平台发布 | Human-in-the-loop、权限、幂等与审计 |
+| 4 ✅ | 人工审核、版本管理、多平台发布 | Human-in-the-loop、四眼原则、幂等与审计 |
 | 5 | 评测、监控、Redis/PostgreSQL、部署 | 生产评测、可观测性、可靠性与工程化 |
 
 ## Engineering decisions

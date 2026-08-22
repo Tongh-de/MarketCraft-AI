@@ -32,5 +32,20 @@ flowchart TD
 
 Phase 2 adds a production LLM provider, structured visual analysis and a dedicated poster generator while preserving keyless Mock mode.
 Phase 3 adds a product catalog and hybrid brand retrieval. Local mode implements BM25, dense retrieval and RRF in memory; production mode uses Milvus native BM25, a dense vector field, metadata filters and the same RRF strategy.
-Phase 4 adds human approval, content versioning and publishing adapters.
+Phase 4 adds human approval, immutable content versions, append-only audit events and idempotent publishing adapters. Platform credentials are deliberately excluded from the repository; without them, adapters return explicitly labelled Mock results.
+
+## Content lifecycle
+
+```mermaid
+stateDiagram-v2
+    [*] --> Draft
+    Draft --> PendingReview: submit
+    PendingReview --> Approved: approve
+    PendingReview --> Rejected: reject
+    Rejected --> Draft: revise
+    Approved --> Published: publish
+    Approved --> PartialFailed: platform error
+```
+
+An approved version is immutable. Any edit creates a new version in Draft status, and the reviewer must differ from the submitter. Publication uses an idempotency key scoped to the campaign version so retries return the original result instead of creating duplicate posts.
 Phase 5 adds evaluation datasets, tracing, monitoring, Redis persistence and deployment hardening.

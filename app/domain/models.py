@@ -1,7 +1,9 @@
+from datetime import UTC, datetime
 from enum import StrEnum
+from typing import Literal
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field, HttpUrl, field_validator
+from pydantic import BaseModel, Field, HttpUrl, field_validator, model_validator
 
 
 class Platform(StrEnum):
@@ -146,3 +148,90 @@ class ProductSearchRequest(BaseModel):
 class ProductSearchResponse(BaseModel):
     total: int
     items: list[ProductRecord]
+
+
+class LifecycleStatus(StrEnum):
+    DRAFT = "draft"
+    PENDING_REVIEW = "pending_review"
+    APPROVED = "approved"
+    REJECTED = "rejected"
+    PUBLISHED = "published"
+    PARTIAL_FAILED = "partial_failed"
+
+
+class AuditEvent(BaseModel):
+    event_id: UUID = Field(default_factory=uuid4)
+    occurred_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    actor: str
+    action: str
+    details: dict[str, str] = Field(default_factory=dict)
+
+
+class CampaignVersion(BaseModel):
+    version: int = Field(ge=1)
+    copies: list[PlatformCopy]
+    poster_prompt: str
+    created_by: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    change_note: str
+
+
+class CampaignLifecycle(BaseModel):
+    campaign_id: UUID
+    status: LifecycleStatus
+    current_version: int
+    versions: list[CampaignVersion]
+    requested_by: str | None = None
+    reviewed_by: str | None = None
+    review_reason: str | None = None
+    audit_log: list[AuditEvent] = Field(default_factory=list)
+
+
+class CampaignRevisionRequest(BaseModel):
+    actor: str = Field(min_length=2, max_length=100)
+    change_note: str = Field(min_length=2, max_length=500)
+    copies: list[PlatformCopy] | None = None
+    poster_prompt: str | None = Field(default=None, min_length=10, max_length=32000)
+
+    @model_validator(mode="after")
+    def require_a_change(self):
+        if self.copies is None and self.poster_prompt is None:
+            raise ValueError("copies or poster_prompt must be provided")
+        return self
+
+
+class ReviewSubmitRequest(BaseModel):
+    actor: str = Field(min_length=2, max_length=100)
+
+
+class ApprovalDecisionRequest(BaseModel):
+    reviewer: str = Field(min_length=2, max_length=100)
+    action: Literal["approve", "reject"]
+    reason: str | None = Field(default=None, max_length=1000)
+
+    @model_validator(mode="after")
+    def require_rejection_reason(self):
+        if self.action == "reject" and not self.reason:
+            raise ValueError("reason is required when rejecting a campaign")
+        return self
+
+
+class PublishRequest(BaseModel):
+    actor: str = Field(min_length=2, max_length=100)
+    idempotency_key: str = Field(min_length=8, max_length=128)
+    platforms: list[Platform] = Field(min_length=1)
+
+
+class PlatformPublicationResult(BaseModel):
+    platform: Platform
+    status: Literal["published", "failed"]
+    external_id: str | None = None
+    error: str | None = None
+
+
+class PublishBatchResult(BaseModel):
+    campaign_id: UUID
+    version: int
+    idempotency_key: str
+    status: LifecycleStatus
+    results: list[PlatformPublicationResult]

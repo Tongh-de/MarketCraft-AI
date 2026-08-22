@@ -36,6 +36,10 @@ def test_generate_campaign_endpoint() -> None:
     assert result["brand_citations"]
     assert result["visual_analysis"]["confidence"] == 0.35
     assert result["trace"][-1] == "package_result"
+    lifecycle = client.get(f"/api/v1/campaigns/{result['campaign_id']}")
+    assert lifecycle.status_code == 200
+    assert lifecycle.json()["status"] == "draft"
+    assert lifecycle.json()["current_version"] == 1
 
 
 def test_mock_poster_endpoint_is_keyless() -> None:
