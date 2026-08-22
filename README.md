@@ -1,8 +1,8 @@
 # MarketCraft AI
 
-面向电商运营团队的多模态营销内容生产 Agent 平台。系统接收商品资料和图片，自动提取卖点、检索品牌规范、生成多平台文案与海报提示词，并通过质量审核节点输出可追溯的营销内容包。
+面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成五个阶段：系统覆盖多模态生成、品牌 RAG、商品目录、人工审核、内容版本、多平台发布、持久化、监控和离线评测。默认使用内存存储、Mock 生成和 Mock 发布，无需外部凭证即可演示；所有模拟结果均带有明确标识。
+当前版本已完成六个阶段：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行和异常隔离。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟外部 ID 均带有 `mock-` 前缀。
 
 ## Core workflow
 
@@ -13,6 +13,14 @@ flowchart LR
     C --> D[内容生成]
     D --> E[质量审核]
     E --> F[营销内容包]
+```
+
+```mermaid
+flowchart LR
+    A[平台订单] --> B[ERP 库存]
+    B --> C[Agent 决策]
+    C --> D[人工审核]
+    D --> E[履约或补货]
 ```
 
 ## Current capabilities
@@ -43,6 +51,12 @@ flowchart LR
 - Prometheus HTTP 与业务指标，暴露于 `/metrics`
 - 版本化 RAG 回归集，计算 Recall@K、MRR 和引用覆盖率
 - CI 自动执行单元测试、Ruff 检查和 RAG 回归评测
+- Amazon、TikTok Shop 统一订单网关，可替换官方 API 适配器
+- ERP 库存查询、库存预占和补货任务接口
+- LangGraph 订单工作流：校验 → 查库存 → 决策 → 人工复核
+- 库存充足时生成履约方案，库存不足时阻断履约并生成补货方案
+- 外部写操作四眼审批、订单级幂等、步骤级失败隔离和审计日志
+- 飞书审批通知接口及确定性 Mock 实现
 
 ## Quick start
 
@@ -101,6 +115,18 @@ docker compose up --build
 
 `POST /api/v1/campaigns/{id}/publish`：幂等发布已批准版本。
 
+`PUT /api/v1/operations/inventory/{sku}`：写入 ERP 库存演示数据。
+
+`PUT /api/v1/operations/platform-orders/{channel}/{order_id}`：写入 Mock 平台订单。
+
+`POST /api/v1/operations/platform-orders/{channel}/{order_id}/process`：通过平台网关拉取订单并生成运营决策。
+
+`POST /api/v1/operations/runs/{id}/decision`：人工批准或拒绝外部写操作。
+
+`POST /api/v1/operations/runs/{id}/execute`：幂等执行库存预占、履约或补货任务。
+
+`GET /api/v1/operations/runs`：查看运营任务、风险、执行轨迹和异常结果。
+
 `GET /metrics`：返回 Prometheus 格式的 HTTP、内容生成和发布指标。
 
 真实模型模式：
@@ -150,6 +176,7 @@ REDIS_URL=redis://redis:6379/0
 | 3 ✅ | 品牌 RAG、商品库、混合召回 | Milvus、BM25、RRF、引用溯源 |
 | 4 ✅ | 人工审核、版本管理、多平台发布 | Human-in-the-loop、四眼原则、幂等与审计 |
 | 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
+| 6 ✅ | 订单、库存、履约、补货与飞书审批 | 跨系统 Agent、Human-in-the-loop、业务闭环 |
 
 ## Engineering decisions
 
@@ -157,12 +184,13 @@ REDIS_URL=redis://redis:6379/0
 - 所有生成器都通过 `ContentGenerator` 接口接入，Mock、OpenAI 兼容接口或本地模型可以互换。
 - 生成结果必须经过独立质量节点，不能让同一次生成直接充当审核结论。
 - 默认内存模式降低演示成本；通过环境变量可切换 SQLAlchemy 持久化与 Redis 幂等缓存。
+- 订单决策使用确定性工作流；所有会修改库存或创建任务的操作必须先经过不同操作者审批。
 
 ## Verification boundary
 
-- 已在无外部服务模式验证：19 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布幂等、Prometheus 指标端点。
+- 已在无外部服务模式验证：25 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、Prometheus 指标端点。
 - 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
-- 已实现但未在本环境联调：PostgreSQL、Redis、真实平台发布，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
+- 已实现但未在本环境联调：PostgreSQL、Redis、Amazon/TikTok Shop/ERP/飞书真实接口，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
 - Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。
 
 更完整的设计见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。

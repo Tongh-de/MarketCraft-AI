@@ -23,6 +23,16 @@ PUBLICATIONS = Counter(
     "Per-platform publication outcomes",
     ["platform", "status"],
 )
+ORDER_OPERATIONS = Counter(
+    "marketcraft_order_operations_total",
+    "Order operation recommendations",
+    ["channel", "action"],
+)
+OPERATION_EXECUTIONS = Counter(
+    "marketcraft_operation_executions_total",
+    "Order operation execution outcomes",
+    ["system", "status"],
+)
 
 
 async def prometheus_middleware(request: Request, call_next) -> Response:

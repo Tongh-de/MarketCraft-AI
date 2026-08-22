@@ -29,3 +29,54 @@ X-Thread-ID: demo-thread-001
   "forbidden_claims": ["治愈", "全网最低"]
 }
 
+### Seed ERP inventory for the operations demo
+PUT http://localhost:8000/api/v1/operations/inventory/OPS-CUP-001
+Content-Type: application/json
+
+{
+  "sku": "OPS-CUP-001",
+  "warehouse": "US-WEST",
+  "available": 20,
+  "reserved": 0,
+  "reorder_point": 5
+}
+
+### Seed an Amazon order in the explicit Mock platform adapter
+PUT http://localhost:8000/api/v1/operations/platform-orders/amazon/AMZ-DEMO-001
+Content-Type: application/json
+
+{
+  "order_id": "AMZ-DEMO-001",
+  "channel": "amazon",
+  "buyer_region": "US",
+  "lines": [
+    {"sku": "OPS-CUP-001", "quantity": 2}
+  ]
+}
+
+### Pull the platform order and generate a reviewable operation proposal
+POST http://localhost:8000/api/v1/operations/platform-orders/amazon/AMZ-DEMO-001/process
+Content-Type: application/json
+
+{
+  "actor": "operations-agent",
+  "idempotency_key": "process-amz-demo-001"
+}
+
+### Approve with a different operator; replace the placeholder with the returned run_id
+POST http://localhost:8000/api/v1/operations/runs/{{run_id}}/decision
+Content-Type: application/json
+
+{
+  "reviewer": "reviewer-b",
+  "action": "approve",
+  "reason": "库存证据和履约计划已核对"
+}
+
+### Execute the approved inventory reservation and Mock platform fulfillment
+POST http://localhost:8000/api/v1/operations/runs/{{run_id}}/execute
+Content-Type: application/json
+
+{
+  "actor": "executor-c"
+}

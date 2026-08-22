@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "marketcraft-ai"
-version = "0.1.0"
-description = "Agentic e-commerce marketing content production platform"
+version = "0.2.0"
+description = "Cross-border e-commerce content and operations Agent platform"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [

@@ -100,3 +100,58 @@ def test_product_catalog_api_versions_updates() -> None:
     assert created.json()["version"] == 1
     assert updated.json()["version"] == 2
     assert searched.json()["items"][0]["sku"] == "API-CUP-001"
+
+
+def test_order_inventory_review_and_fulfillment_api() -> None:
+    inventory = client.put(
+        "/api/v1/operations/inventory/API-OPS-001",
+        json={
+            "sku": "API-OPS-001",
+            "warehouse": "US-WEST",
+            "available": 8,
+            "reserved": 0,
+            "reorder_point": 2,
+        },
+    )
+    assert inventory.status_code == 200
+
+    processed = client.post(
+        "/api/v1/operations/orders/process",
+        json={
+            "order": {
+                "order_id": "AMZ-API-ORDER-001",
+                "channel": "amazon",
+                "buyer_region": "US",
+                "lines": [{"sku": "API-OPS-001", "quantity": 2}],
+            },
+            "actor": "operations-agent",
+            "idempotency_key": "process-amz-api-order-001",
+        },
+    )
+    assert processed.status_code == 200
+    run = processed.json()
+    assert run["status"] == "pending_review"
+    assert run["recommended_action"] == "fulfill_order"
+    assert run["notification_id"].startswith("mock-feishu-review-")
+
+    self_review = client.post(
+        f"/api/v1/operations/runs/{run['run_id']}/decision",
+        json={"reviewer": "operations-agent", "action": "approve"},
+    )
+    assert self_review.status_code == 409
+
+    approved = client.post(
+        f"/api/v1/operations/runs/{run['run_id']}/decision",
+        json={"reviewer": "reviewer-b", "action": "approve"},
+    )
+    executed = client.post(
+        f"/api/v1/operations/runs/{run['run_id']}/execute",
+        json={"actor": "executor-c"},
+    )
+    assert approved.status_code == 200
+    assert executed.status_code == 200
+    assert executed.json()["status"] == "completed"
+    assert all(item["mock"] for item in executed.json()["execution_results"])
+
+    stock = client.get("/api/v1/operations/inventory/API-OPS-001")
+    assert stock.json()["available"] == 6

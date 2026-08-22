@@ -10,5 +10,4 @@ test:
 	pytest
 
 lint:
-	ruff check app tests
-
+	ruff check app scripts tests

@@ -3,6 +3,7 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.api.v1.campaigns import router as campaigns_router
 from app.api.v1.knowledge import router as knowledge_router
+from app.api.v1.operations import router as operations_router
 from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
 from app.core.config import get_settings
@@ -11,11 +12,12 @@ from app.observability import prometheus_middleware
 settings = get_settings()
 app = FastAPI(
     title=settings.app_name,
-    version="0.1.0",
-    description="Agentic e-commerce marketing content production API",
+    version="0.2.0",
+    description="Cross-border e-commerce content and operations Agent API",
 )
 app.include_router(campaigns_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
+app.include_router(operations_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
 app.middleware("http")(prometheus_middleware)

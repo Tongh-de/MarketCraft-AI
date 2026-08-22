@@ -34,6 +34,23 @@ Phase 2 adds a production LLM provider, structured visual analysis and a dedicat
 Phase 3 adds a product catalog and hybrid brand retrieval. Local mode implements BM25, dense retrieval and RRF in memory; production mode uses Milvus native BM25, a dense vector field, metadata filters and the same RRF strategy.
 Phase 4 adds human approval, immutable content versions, append-only audit events and idempotent publishing adapters. Platform credentials are deliberately excluded from the repository; without them, adapters return explicitly labelled Mock results.
 Phase 5 adds SQLAlchemy state persistence, Redis-backed publication idempotency, Prometheus metrics, a versioned retrieval evaluation set and CI regression gates. Docker Compose describes an API, PostgreSQL and Redis deployment topology.
+Phase 6 adds a second LangGraph workflow for cross-border order operations. A platform gateway pulls Amazon or TikTok Shop orders, an ERP gateway reads stock, and the workflow recommends fulfillment or replenishment. Every external write pauses for four-eyes approval.
+
+## Order operations flow
+
+```mermaid
+flowchart TD
+    A[Amazon or TikTok order] --> B[Validate order]
+    B --> C[Read ERP inventory]
+    C --> D{Stock sufficient?}
+    D -- Yes --> E[Fulfillment proposal]
+    D -- No --> F[Restock proposal]
+    E --> G[Human review]
+    F --> G
+    G --> H[Idempotent execution]
+```
+
+The workflow itself is read-only. It produces inventory evidence, a recommendation, risk flags and a trace. Only the separately approved execution service can reserve stock, create a fulfillment or create a replenishment task. This boundary prevents an LLM or workflow node from directly mutating business systems.
 
 ## Content lifecycle
 
@@ -59,15 +76,17 @@ An approved version is immutable. Any edit creates a new version in Draft status
 | Publication idempotency | In-memory TTL store | Redis TTL store | `IDEMPOTENCY_MODE` |
 | Retrieval | In-memory hybrid retrieval | Milvus hybrid retrieval | `RETRIEVAL_MODE` |
 | Generation and publishing | Deterministic Mock providers | OpenAI and platform adapters | Provider settings |
+| Orders and fulfillment | Mock Amazon/TikTok/ERP gateways | Official APIs behind protocols | Dependency injection |
+| Review notification | Mock Feishu notifier | Feishu bot or approval API | Dependency injection |
 
 State is serialized through Pydantic models so the same domain schema is used by memory and database implementations. Idempotency records include campaign and version ownership; reusing a key for a different version is rejected.
 
 ## Observability and evaluation
 
-The ASGI middleware records normalized-route request counts and duration. Domain counters track campaign generation and publication outcomes, and `/metrics` exposes the Prometheus text format.
+The ASGI middleware records normalized-route request counts and duration. Domain counters track campaign generation, publication, order recommendations and operation execution outcomes, and `/metrics` exposes the Prometheus text format.
 
 `data/eval/retrieval.json` is a small, version-controlled regression dataset. `python -m scripts.evaluate_rag --top-k 1` reports Recall@K, MRR and citation coverage and is executed by CI. It is an engineering regression gate, not a claim of production retrieval quality.
 
 ## Verification status
 
-Memory and SQLite modes, lifecycle restoration, idempotent Mock publishing, metrics, and the evaluation runner are covered by automated tests. PostgreSQL, Redis, real platform credentials and remote model providers are implemented deployment options but require environment-specific integration tests before production use.
+Memory and SQLite modes, lifecycle restoration, idempotent Mock publishing, order fulfillment/replenishment decisions, failure isolation, metrics, and the evaluation runner are covered by automated tests. PostgreSQL, Redis, real platform credentials, Feishu and remote model providers require environment-specific integration tests before production use.
