@@ -1,4 +1,8 @@
+from pathlib import Path
+
 from fastapi import FastAPI, Response
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 
 from app.api.v1.campaigns import router as campaigns_router
@@ -10,17 +14,29 @@ from app.core.config import get_settings
 from app.observability import prometheus_middleware
 
 settings = get_settings()
+static_dir = Path(__file__).parent / "static"
 app = FastAPI(
     title=settings.app_name,
-    version="0.2.0",
+    version="0.3.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 app.include_router(campaigns_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
 app.include_router(operations_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
 app.middleware("http")(prometheus_middleware)
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    return RedirectResponse(url="/dashboard")
+
+
+@app.get("/dashboard", include_in_schema=False)
+def dashboard() -> FileResponse:
+    return FileResponse(static_dir / "dashboard.html")
 
 
 @app.get("/health", tags=["system"])

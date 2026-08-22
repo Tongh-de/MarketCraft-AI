@@ -35,6 +35,7 @@ Phase 3 adds a product catalog and hybrid brand retrieval. Local mode implements
 Phase 4 adds human approval, immutable content versions, append-only audit events and idempotent publishing adapters. Platform credentials are deliberately excluded from the repository; without them, adapters return explicitly labelled Mock results.
 Phase 5 adds SQLAlchemy state persistence, Redis-backed publication idempotency, Prometheus metrics, a versioned retrieval evaluation set and CI regression gates. Docker Compose describes an API, PostgreSQL and Redis deployment topology.
 Phase 6 adds a second LangGraph workflow for cross-border order operations. A platform gateway pulls Amazon or TikTok Shop orders, an ERP gateway reads stock, and the workflow recommends fulfillment or replenishment. Every external write pauses for four-eyes approval.
+Phase 7 adds a zero-build operations console served by FastAPI. It consumes the same public API used by external clients and does not bypass domain services or approval rules.
 
 ## Order operations flow
 
@@ -51,6 +52,10 @@ flowchart TD
 ```
 
 The workflow itself is read-only. It produces inventory evidence, a recommendation, risk flags and a trace. Only the separately approved execution service can reserve stock, create a fulfillment or create a replenishment task. This boundary prevents an LLM or workflow node from directly mutating business systems.
+
+## Operations console
+
+`/dashboard` is a responsive HTML/CSS/JavaScript client with no Node build step. It shows KPI summaries, operation runs, inventory evidence, risk flags, approval identity, workflow trace and external execution results. The quick-demo form writes only to the configured adapters; in default mode every destination is explicitly labelled Mock.
 
 ## Content lifecycle
 

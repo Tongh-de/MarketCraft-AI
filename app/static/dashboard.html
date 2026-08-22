@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 跨境电商运营自动化控制台" />
+    <title>MarketCraft AI · 运营控制台</title>
+    <link rel="stylesheet" href="/static/dashboard.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/dashboard" aria-label="MarketCraft AI 首页">
+          <span class="brand-mark">M</span>
+          <span>
+            <strong>MarketCraft</strong>
+            <small>AI Operations</small>
+          </span>
+        </a>
+
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item active" href="#overview"><span>01</span>运营总览</a>
+          <a class="nav-item" href="#runs"><span>02</span>订单履约</a>
+          <a class="nav-item" href="#new-operation"><span>03</span>新建任务</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>04</span>API 文档</a>
+        </nav>
+
+        <div class="environment-card">
+          <div class="eyebrow">CURRENT ENVIRONMENT</div>
+          <div class="environment-title"><span class="pulse"></span>本地演示环境</div>
+          <p>Amazon、TikTok Shop、ERP 与飞书均使用确定性 Mock 适配器。</p>
+          <span class="mock-badge">MOCK MODE</span>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar" id="overview">
+          <div>
+            <div class="eyebrow">OPERATIONS CONTROL CENTER</div>
+            <h1>跨境电商运营中心</h1>
+            <p>从平台订单到库存、审批和履约，一条链路完成追踪。</p>
+          </div>
+          <div class="topbar-actions">
+            <span class="service-status"><span class="pulse"></span>API 正常</span>
+            <button class="button ghost" id="refreshButton" type="button">刷新数据</button>
+            <a class="button primary" href="#new-operation">新建运营任务</a>
+          </div>
+        </header>
+
+        <section class="kpi-grid" aria-label="运营指标">
+          <article class="kpi-card accent-blue">
+            <div class="kpi-label">全部任务</div>
+            <strong id="totalRuns">0</strong>
+            <small>订单工作流累计执行</small>
+          </article>
+          <article class="kpi-card accent-amber">
+            <div class="kpi-label">待人工审核</div>
+            <strong id="pendingRuns">0</strong>
+            <small>外部写操作尚未放行</small>
+          </article>
+          <article class="kpi-card accent-green">
+            <div class="kpi-label">执行完成</div>
+            <strong id="completedRuns">0</strong>
+            <small>库存与平台步骤已完成</small>
+          </article>
+          <article class="kpi-card accent-red">
+            <div class="kpi-label">风险任务</div>
+            <strong id="riskRuns">0</strong>
+            <small>库存不足或执行异常</small>
+          </article>
+        </section>
+
+        <section class="workspace-grid">
+          <article class="panel runs-panel" id="runs">
+            <div class="panel-header">
+              <div>
+                <div class="eyebrow">AGENT RUNS</div>
+                <h2>订单运营任务</h2>
+              </div>
+              <label class="filter-control">
+                <span>状态筛选</span>
+                <select id="statusFilter">
+                  <option value="">全部状态</option>
+                  <option value="pending_review">待审核</option>
+                  <option value="approved">已批准</option>
+                  <option value="completed">已完成</option>
+                  <option value="partial_failed">部分失败</option>
+                  <option value="rejected">已拒绝</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>订单</th>
+                    <th>平台</th>
+                    <th>Agent 建议</th>
+                    <th>状态</th>
+                    <th>风险</th>
+                  </tr>
+                </thead>
+                <tbody id="runsTableBody"></tbody>
+              </table>
+              <div class="empty-state" id="emptyState">
+                <span class="empty-icon">↗</span>
+                <h3>还没有运营任务</h3>
+                <p>使用右侧表单创建第一条端到端演示链路。</p>
+              </div>
+            </div>
+          </article>
+
+          <article class="panel create-panel" id="new-operation">
+            <div class="panel-header">
+              <div>
+                <div class="eyebrow">QUICK DEMO</div>
+                <h2>创建运营任务</h2>
+              </div>
+              <span class="mock-badge">SAFE MOCK</span>
+            </div>
+            <p class="panel-description">一次提交会写入演示库存和平台订单，再由 Agent 拉单并生成决策。</p>
+
+            <form id="operationForm">
+              <div class="form-row">
+                <label>
+                  <span>销售平台</span>
+                  <select name="channel">
+                    <option value="amazon">Amazon</option>
+                    <option value="tiktok_shop">TikTok Shop</option>
+                  </select>
+                </label>
+                <label>
+                  <span>买家区域</span>
+                  <select name="region">
+                    <option value="US">美国 US</option>
+                    <option value="SG">新加坡 SG</option>
+                    <option value="GB">英国 GB</option>
+                  </select>
+                </label>
+              </div>
+              <label>
+                <span>平台订单号</span>
+                <input name="orderId" value="AMZ-DEMO-001" maxlength="128" required />
+              </label>
+              <label>
+                <span>商品 SKU</span>
+                <input name="sku" value="OPS-CUP-001" maxlength="64" required />
+              </label>
+              <div class="form-row three">
+                <label>
+                  <span>下单数量</span>
+                  <input name="quantity" type="number" value="2" min="1" required />
+                </label>
+                <label>
+                  <span>可用库存</span>
+                  <input name="available" type="number" value="20" min="0" required />
+                </label>
+                <label>
+                  <span>补货线</span>
+                  <input name="reorderPoint" type="number" value="5" min="0" required />
+                </label>
+              </div>
+              <label>
+                <span>仓库</span>
+                <input name="warehouse" value="US-WEST" maxlength="64" required />
+              </label>
+              <button class="button primary full" type="submit" id="submitButton">
+                创建并运行 Agent
+              </button>
+            </form>
+          </article>
+        </section>
+
+        <section class="panel detail-panel" id="runDetail">
+          <div class="detail-placeholder">
+            <span>选择一条任务</span>
+            <p>查看库存证据、Agent 决策、审批记录和外部系统执行结果。</p>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/dashboard.js" defer></script>
+  </body>
+</html>

@@ -2,7 +2,7 @@
 
 面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成六个阶段：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行和异常隔离。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟外部 ID 均带有 `mock-` 前缀。
+当前版本已完成七个阶段：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟外部 ID 均带有 `mock-` 前缀。
 
 ## Core workflow
 
@@ -57,6 +57,7 @@ flowchart LR
 - 库存充足时生成履约方案，库存不足时阻断履约并生成补货方案
 - 外部写操作四眼审批、订单级幂等、步骤级失败隔离和审计日志
 - 飞书审批通知接口及确定性 Mock 实现
+- 响应式运营控制台，集中展示订单、库存证据、风险、审批和执行轨迹
 
 ## Quick start
 
@@ -68,7 +69,14 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/docs` 查看接口文档，或运行 `examples.http` 中的示例请求。
+打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
+
+控制台右侧表单可以一键完成：
+
+1. 写入 Mock ERP 库存；
+2. 写入 Amazon/TikTok Shop Mock 订单；
+3. 由 Agent 拉取订单并生成履约或补货建议；
+4. 在详情区批准、拒绝或执行外部操作。
 
 ```bash
 pytest
@@ -177,6 +185,7 @@ REDIS_URL=redis://redis:6379/0
 | 4 ✅ | 人工审核、版本管理、多平台发布 | Human-in-the-loop、四眼原则、幂等与审计 |
 | 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
 | 6 ✅ | 订单、库存、履约、补货与飞书审批 | 跨系统 Agent、Human-in-the-loop、业务闭环 |
+| 7 ✅ | 电商运营管理控制台 | 可视化演示、业务状态与执行轨迹 |
 
 ## Engineering decisions
 
@@ -188,7 +197,7 @@ REDIS_URL=redis://redis:6379/0
 
 ## Verification boundary
 
-- 已在无外部服务模式验证：25 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、Prometheus 指标端点。
+- 已在无外部服务模式验证：26 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、Dashboard 页面和静态资源、Prometheus 指标端点。
 - 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
 - 已实现但未在本环境联调：PostgreSQL、Redis、Amazon/TikTok Shop/ERP/飞书真实接口，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
 - Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。

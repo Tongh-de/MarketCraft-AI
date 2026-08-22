@@ -11,6 +11,19 @@ def test_health_endpoint() -> None:
     assert response.json()["status"] == "ok"
 
 
+def test_dashboard_and_static_assets_are_served() -> None:
+    root = client.get("/", follow_redirects=False)
+    dashboard = client.get("/dashboard")
+    stylesheet = client.get("/static/dashboard.css")
+    script = client.get("/static/dashboard.js")
+    assert root.status_code == 307
+    assert root.headers["location"] == "/dashboard"
+    assert dashboard.status_code == 200
+    assert "跨境电商运营中心" in dashboard.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")
