@@ -25,6 +25,8 @@ class Settings(BaseSettings):
     idempotency_mode: Literal["memory", "redis"] = "memory"
     redis_url: str = "redis://localhost:6379/0"
     idempotency_ttl_seconds: int = 604800
+    upload_dir: str = "./data/uploads"
+    max_upload_bytes: int = 10485760
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

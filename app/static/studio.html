@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="MarketCraft AI 商品素材创作工作台" />
+    <title>MarketCraft AI · AI 商品创作台</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/studio">
+          <span class="brand-mark">M</span>
+          <span><strong>MarketCraft</strong><small>AI CREATIVE</small></span>
+        </a>
+        <nav class="nav" aria-label="主导航">
+          <a class="nav-item active" href="/studio"><span>✦</span>AI 创作台</a>
+          <a class="nav-item" href="#results"><span>▧</span>商品素材</a>
+          <a class="nav-item" href="#skill"><span>◇</span>Skill 中心</a>
+          <a class="nav-item" href="#plugins"><span>⌘</span>插件中心</a>
+          <a class="nav-item" href="/dashboard"><span>↗</span>运营控制台</a>
+          <a class="nav-item" href="/docs" target="_blank"><span>{ }</span>API 文档</a>
+        </nav>
+        <div class="environment-card">
+          <div class="eyebrow light">CREATIVE ENGINE</div>
+          <strong><i class="pulse"></i>Mock 创作环境</strong>
+          <p>当前生成结果用于验证完整产品链路，不会调用付费外部模型。</p>
+        </div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">AI PRODUCT CREATION STUDIO</div>
+            <h1>AI 商品上架工作台</h1>
+            <p>从一张商品图开始，生成多角度素材、模特试穿图和营销海报。</p>
+          </div>
+          <div class="live-badges">
+            <span id="pluginCount">0 个插件已连接</span>
+            <span><i class="pulse"></i>API 正常</span>
+          </div>
+        </header>
+
+        <ol class="stepper" aria-label="创作流程">
+          <li class="active"><b>1</b>上传商品图</li>
+          <li><b>2</b>选择 Skill</li>
+          <li><b>3</b>生成商品素材</li>
+          <li><b>4</b>人工确认</li>
+          <li><b>5</b>平台发布</li>
+        </ol>
+
+        <section class="studio-grid">
+          <article class="panel input-panel">
+            <div class="panel-heading">
+              <div><div class="eyebrow">SOURCE PRODUCT</div><h2>原始商品</h2></div>
+              <span class="mode-chip">UPLOAD</span>
+            </div>
+            <form id="creationForm">
+              <label class="dropzone" id="dropzone">
+                <input id="imageInput" name="image" type="file" accept="image/png,image/jpeg,image/webp" required />
+                <img id="sourcePreview" alt="商品原图预览" hidden />
+                <span class="upload-placeholder" id="uploadPlaceholder">
+                  <b>＋</b>
+                  <strong>上传商品原图</strong>
+                  <small>PNG、JPEG、WebP · 最大 10MB</small>
+                </span>
+              </label>
+              <div class="form-row">
+                <label><span>商品名称</span><input name="name" value="轻盈通勤夹克" required maxlength="120" /></label>
+                <label><span>商品 SKU</span><input name="sku" value="JACKET-001" required maxlength="64" /></label>
+              </div>
+              <label><span>商品品类</span><input name="category" value="女装外套" required maxlength="80" /></label>
+              <label><span>目标人群</span><input name="audience" value="城市通勤女性" required maxlength="300" /></label>
+              <label>
+                <span>对话式创作要求</span>
+                <textarea name="instruction" required maxlength="2000">保持商品颜色和版型一致，生成多角度商品图、模特试穿图和简洁通勤风海报。</textarea>
+              </label>
+              <fieldset>
+                <legend>需要生成</legend>
+                <div class="output-options">
+                  <label><input type="checkbox" value="front_view" checked />正面图</label>
+                  <label><input type="checkbox" value="side_view" checked />侧面图</label>
+                  <label><input type="checkbox" value="back_view" checked />背面图</label>
+                  <label><input type="checkbox" value="model_try_on" checked />模特试穿</label>
+                  <label><input type="checkbox" value="poster" checked />营销海报</label>
+                  <label><input type="checkbox" value="short_video" />短视频</label>
+                </div>
+              </fieldset>
+              <label><span>创作引擎</span><select id="pluginSelect" name="plugin"></select></label>
+              <button class="button primary full" id="generateButton" type="submit">✦ 开始 AI 创作</button>
+            </form>
+          </article>
+
+          <article class="panel result-panel" id="results">
+            <div class="panel-heading">
+              <div><div class="eyebrow">GENERATED ASSETS</div><h2>AI 生成结果</h2></div>
+              <span class="status-chip" id="taskStatus">等待任务</span>
+            </div>
+            <div class="empty-result" id="emptyResult">
+              <div class="empty-spark">✦</div>
+              <h3>从左侧上传一张商品图</h3>
+              <p>系统将通过商品素材 Skill 调用已安装插件，并在这里展示标准化产物。</p>
+            </div>
+            <div class="asset-grid" id="assetGrid" hidden></div>
+            <div class="task-summary" id="taskSummary" hidden></div>
+          </article>
+
+          <aside class="right-rail">
+            <article class="panel skill-card" id="skill">
+              <div class="eyebrow">SELECTED SKILL</div>
+              <h2>商品素材生成 Skill</h2>
+              <p>固定商品身份后，按照请求选择生成引擎并校验产物清单。</p>
+              <div class="capability-list">
+                <span>多图生成</span><span>虚拟试穿</span><span>海报生成</span><span>产物校验</span>
+              </div>
+            </article>
+            <article class="panel plugin-panel" id="plugins">
+              <div class="panel-heading compact">
+                <div><div class="eyebrow">INSTALLED PLUGINS</div><h2>已安装插件</h2></div>
+              </div>
+              <div id="pluginList" class="plugin-list"></div>
+            </article>
+            <article class="panel trace-panel">
+              <div class="eyebrow">EXECUTION TRACE</div>
+              <h2>执行轨迹</h2>
+              <ol id="traceList"><li class="muted">等待创作任务</li></ol>
+            </article>
+          </aside>
+        </section>
+
+        <section class="panel recent-panel">
+          <div class="panel-heading compact">
+            <div><div class="eyebrow">RECENT TASKS</div><h2>最近创作任务</h2></div>
+            <button class="button ghost" id="refreshTasks" type="button">刷新</button>
+          </div>
+          <div id="recentTasks" class="recent-tasks"><p class="muted">暂无任务</p></div>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/studio.js" defer></script>
+  </body>
+</html>

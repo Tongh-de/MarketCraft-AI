@@ -12,6 +12,7 @@ COPY data ./data
 RUN pip install --no-cache-dir .
 
 RUN groupadd --system marketcraft && useradd --system --gid marketcraft marketcraft
+RUN mkdir -p /app/data/uploads && chown -R marketcraft:marketcraft /app/data/uploads
 
 USER marketcraft
 

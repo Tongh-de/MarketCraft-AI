@@ -2,7 +2,7 @@
 
 面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
 
-当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表和任务状态模型。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
+当前版本已完成原有七个阶段，并开始建设 AI 商品创作链路：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供独立的 Skill 注册表、插件注册表、任务状态模型，以及可直接操作的商品图片上传和 AI 创作台。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
 
 ## Product preview
 
@@ -81,7 +81,7 @@ pip install -e ".[dev]"
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
+打开 `http://localhost:8000/studio` 进入 AI 商品创作台，或打开 `http://localhost:8000/dashboard` 进入运营控制台；`http://localhost:8000/docs` 提供接口文档，也可运行 `examples.http` 中的示例请求。
 
 控制台右侧表单可以一键完成：
 
@@ -152,6 +152,8 @@ docker compose up --build
 `GET /api/v1/creation/skills`：查看已安装的电商创作 Skill。
 
 `GET /api/v1/creation/plugins`：查看 ComfyUI、即梦 AI 等创作插件及其能力状态。
+
+`POST /api/v1/creation/uploads`：上传 PNG、JPEG 或 WebP 商品图，执行大小、类型和文件签名校验。
 
 `POST /api/v1/creation/tasks`：提交商品素材创作任务，返回标准化素材清单和执行轨迹。
 

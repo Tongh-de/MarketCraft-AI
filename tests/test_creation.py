@@ -1,8 +1,18 @@
+from pathlib import Path
+
 from fastapi.testclient import TestClient
 
+from app.core.config import get_settings
 from app.main import app
 
 client = TestClient(app)
+
+VALID_PNG = (
+    b"\x89PNG\r\n\x1a\n"
+    b"\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00"
+    b"\x1f\x15\xc4\x89\x00\x00\x00\rIDAT\x08\xd7c\xf8\xcf\xc0\xf0\x1f\x00\x05\x00\x01\xff"
+    b"\x89\x99=\x1d\x00\x00\x00\x00IEND\xaeB`\x82"
+)
 
 
 def _request_payload() -> dict:
@@ -78,3 +88,35 @@ def test_plugin_capability_validation_is_explicit() -> None:
     assert response.status_code == 201
     assert response.json()["status"] == "failed"
     assert "does not support" in response.json()["error"]
+
+
+def test_upload_product_image_and_serve_it() -> None:
+    response = client.post(
+        "/api/v1/creation/uploads",
+        files={"file": ("../unsafe-name.png", VALID_PNG, "image/png")},
+    )
+
+    assert response.status_code == 201
+    uploaded = response.json()
+    assert uploaded["original_filename"] == "unsafe-name.png"
+    assert uploaded["content_type"] == "image/png"
+    assert uploaded["size_bytes"] == len(VALID_PNG)
+    assert len(uploaded["checksum_sha256"]) == 64
+    assert uploaded["url"].startswith("/uploads/")
+
+    served = client.get(uploaded["url"])
+    assert served.status_code == 200
+    assert served.content == VALID_PNG
+
+    stored_file = Path(get_settings().upload_dir) / Path(uploaded["url"]).name
+    stored_file.unlink(missing_ok=True)
+
+
+def test_upload_rejects_spoofed_image_content() -> None:
+    response = client.post(
+        "/api/v1/creation/uploads",
+        files={"file": ("fake.png", b"this is not a png", "image/png")},
+    )
+
+    assert response.status_code == 415
+    assert "does not match" in response.json()["detail"]

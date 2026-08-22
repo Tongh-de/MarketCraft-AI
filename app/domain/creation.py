@@ -94,6 +94,16 @@ class GeneratedCreativeAsset(BaseModel):
     metadata: dict[str, str] = Field(default_factory=dict)
 
 
+class UploadedProductImage(BaseModel):
+    upload_id: UUID = Field(default_factory=uuid4)
+    original_filename: str
+    content_type: str
+    size_bytes: int = Field(gt=0)
+    checksum_sha256: str
+    url: str
+    created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+
+
 class PluginDescriptor(BaseModel):
     plugin_id: str
     name: str

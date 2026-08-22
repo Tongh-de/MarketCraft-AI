@@ -2,19 +2,21 @@ from html import escape
 from typing import Annotated
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query, Response, status
+from fastapi import APIRouter, File, HTTPException, Query, Response, UploadFile, status
 
 from app.domain.creation import (
     CreateCreationTaskRequest,
     CreationTask,
     PluginDescriptor,
     SkillDescriptor,
+    UploadedProductImage,
 )
 from app.plugins.registry import get_creative_plugin_registry
 from app.services.creation_tasks import (
     CreationTaskNotFoundError,
     get_creation_task_service,
 )
+from app.services.uploads import UploadValidationError, get_image_upload_service
 from app.skills.registry import get_skill_registry
 
 router = APIRouter(prefix="/creation", tags=["AI product creation"])
@@ -28,6 +30,30 @@ def list_creative_plugins() -> list[PluginDescriptor]:
 @router.get("/skills", response_model=list[SkillDescriptor])
 def list_creative_skills() -> list[SkillDescriptor]:
     return get_skill_registry().list_descriptors()
+
+
+@router.post(
+    "/uploads",
+    response_model=UploadedProductImage,
+    status_code=status.HTTP_201_CREATED,
+)
+async def upload_product_image(
+    file: Annotated[UploadFile, File()],
+) -> UploadedProductImage:
+    content_type = file.content_type or "application/octet-stream"
+    filename = file.filename or "product-image"
+    service = get_image_upload_service()
+    content = await file.read(service.max_upload_bytes + 1)
+    await file.close()
+    try:
+        return service.save(filename, content_type, content)
+    except UploadValidationError as error:
+        code = (
+            status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+            if "exceeds" in str(error)
+            else status.HTTP_415_UNSUPPORTED_MEDIA_TYPE
+        )
+        raise HTTPException(status_code=code, detail=str(error)) from error
 
 
 @router.post("/tasks", response_model=CreationTask, status_code=status.HTTP_201_CREATED)

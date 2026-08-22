@@ -24,6 +24,18 @@ def test_dashboard_and_static_assets_are_served() -> None:
     assert script.status_code == 200
 
 
+def test_creation_studio_and_assets_are_served() -> None:
+    studio = client.get("/studio")
+    stylesheet = client.get("/static/studio.css")
+    script = client.get("/static/studio.js")
+
+    assert studio.status_code == 200
+    assert "AI 商品上架工作台" in studio.text
+    assert "商品素材生成 Skill" in studio.text
+    assert stylesheet.status_code == 200
+    assert script.status_code == 200
+
+
 def test_prometheus_metrics_endpoint() -> None:
     client.get("/health")
     response = client.get("/metrics")

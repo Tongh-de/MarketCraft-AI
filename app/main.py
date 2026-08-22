@@ -16,12 +16,15 @@ from app.observability import prometheus_middleware
 
 settings = get_settings()
 static_dir = Path(__file__).parent / "static"
+upload_dir = Path(settings.upload_dir).resolve()
+upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.4.0",
+    version="0.5.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
+app.mount("/uploads", StaticFiles(directory=upload_dir), name="uploads")
 app.include_router(campaigns_router, prefix="/api/v1")
 app.include_router(creation_router, prefix="/api/v1")
 app.include_router(knowledge_router, prefix="/api/v1")
@@ -39,6 +42,11 @@ def root() -> RedirectResponse:
 @app.get("/dashboard", include_in_schema=False)
 def dashboard() -> FileResponse:
     return FileResponse(static_dir / "dashboard.html")
+
+
+@app.get("/studio", include_in_schema=False)
+def studio() -> FileResponse:
+    return FileResponse(static_dir / "studio.html")
 
 
 @app.get("/health", tags=["system"])
