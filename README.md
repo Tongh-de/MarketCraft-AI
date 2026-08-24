@@ -1,132 +1,127 @@
 # MarketCraft AI
 
-面向跨境电商运营团队的自动化 Agent 平台。系统同时覆盖营销内容生产，以及 Amazon/TikTok Shop 订单、ERP 库存、履约和补货的跨系统协作流程。
+> 面向电商运营团队的一体化 AI 工作台。一个入口完成对话、文案生成、文生图、海报设计、商品上架、订单库存和经营分析。
 
-当前版本已完成原有七个阶段，并持续建设 AI 商品创作闭环：除多模态生成、品牌 RAG、内容审批和发布外，已加入订单导入、库存校验、补货/履约决策、四眼审批、幂等执行、异常隔离和运营管理控制台。创作链路已提供 Skill/Plugin 注册体系、商品图片上传、竞品视觉分析、可编辑海报、多平台商品上架，以及曝光、点击、转化、广告、退货和库存数据回流分析。默认使用内存存储与 Mock 外部系统，无需凭证即可演示；所有模拟结果均明确标记为 `mock`。
+[![FastAPI](https://img.shields.io/badge/FastAPI-0f766e?style=flat-square&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-Agent_Workflow-111827?style=flat-square)](https://www.langchain.com/langgraph)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
+[![Tests](https://img.shields.io/badge/tests-16_passed-16a34a?style=flat-square)](#verification)
 
-用户侧统一从 `/app` 进入产品。商品创作、竞品、海报、上架、经营分析、订单库存、Skill 插件和外部服务都在同一个产品外壳中切换；原独立页面仅作为内部模块和兼容地址保留。
+MarketCraft AI 把电商内容创作和运营流程整合到同一个产品里。你可以像聊天一样向 Agent 下任务, 也可以进入专业模块完成营销文案、文生图、商品创作、竞品分析、海报设计、多平台上架、订单库存处理和数据复盘。
 
-完整产品范围、用户链路、功能编号和分阶段验收标准见 [产品需求文档（PRD）](docs/PRD.md)。
+当前项目已经支持真实 API 接入:
 
-## Product preview
+- DeepSeek / Qwen / OpenAI-compatible 文案模型
+- 通义万相 Wanx 文生图
+- LangSmith 链路追踪
+- Mock 模式本地演示和测试
 
-### 统一产品入口
+## Preview
 
-![MarketCraft AI 统一工作台](docs/assets/unified-app-preview.svg)
+### Unified Workspace
 
-| 运营总览 | 四眼审批 |
+![MarketCraft AI unified workspace](docs/assets/unified-app-preview.svg)
+
+### Operations
+
+| Dashboard | Human Review |
 | --- | --- |
-| ![运营控制台总览](docs/assets/dashboard-preview.svg) | ![订单人工审批](docs/assets/approval-preview.svg) |
-| **库存异常与补货** | **执行结果与审计** |
-| ![库存不足与补货决策](docs/assets/restock-preview.svg) | ![外部系统执行结果](docs/assets/execution-preview.svg) |
+| ![Dashboard preview](docs/assets/dashboard-preview.svg) | ![Approval preview](docs/assets/approval-preview.svg) |
 
-### AI 商品创作与上架
+| Inventory Decision | Execution Trace |
+| --- | --- |
+| ![Restock preview](docs/assets/restock-preview.svg) | ![Execution preview](docs/assets/execution-preview.svg) |
 
-![多平台商品上架工作台](docs/assets/listing-workbench-preview.svg)
+### Listing & Performance
 
-### 经营数据回流与优化
+![Listing workbench](docs/assets/listing-workbench-preview.svg)
 
-![经营数据回流与 AI 优化工作台](docs/assets/performance-insights-preview.svg)
+![Performance insights](docs/assets/performance-insights-preview.svg)
 
-## Core workflow
+## Highlights
+
+| Module | What it does |
+| --- | --- |
+| AI 工作台 | 通过对话让 Agent 执行闲聊、文案生成、文生图等任务 |
+| 营销文案 | 生成商品卖点、小红书/抖音/淘宝/京东文案和质量评分 |
+| 文生图 | 调用通义万相生成商品主图、海报图和营销视觉 |
+| 商品创作 | 管理商品素材、模特试穿、多角度图和创作产物 |
+| 竞品分析 | 拆解竞品视觉、卖点、场景和原创 Brief |
+| 海报设计 | 编辑图层、平台尺寸、品牌颜色和服务端 SVG 预览 |
+| 审核与上架 | 生成平台 Listing, 走四眼审核和幂等发布 |
+| 订单与库存 | 处理平台订单、ERP 库存、履约和补货建议 |
+| 经营优化 | 分析 CTR、转化率、ROAS、退货率和库存覆盖天数 |
+| 可观测性 | 支持 Prometheus metrics 和 LangSmith tracing |
+
+## Architecture
 
 ```mermaid
 flowchart LR
-    A[商品输入] --> B[卖点提取]
-    B --> C[品牌检索]
-    C --> D[内容生成]
-    D --> E[质量审核]
-    E --> F[营销内容包]
+    User[User] --> App[Unified Web App]
+    App --> API[FastAPI API Layer]
+    API --> Workflow[LangGraph Workflows]
+    Workflow --> Generator[LLM / Image Providers]
+    Workflow --> Store[(Memory / Database)]
+    Workflow --> Metrics[Prometheus + LangSmith]
 ```
 
 ```mermaid
 flowchart LR
-    A[平台订单] --> B[ERP 库存]
-    B --> C[Agent 决策]
-    C --> D[人工审核]
-    D --> E[履约或补货]
+    Product[Product Input] --> Points[Selling Points]
+    Points --> Copy[Platform Copy]
+    Copy --> QA[Quality Review]
+    QA --> Package[Campaign Package]
 ```
 
-## Current capabilities
+```mermaid
+flowchart LR
+    Order[Platform Order] --> Stock[ERP Stock]
+    Stock --> Decision[Agent Decision]
+    Decision --> Review[Human Review]
+    Review --> Execute[Fulfillment / Restock]
+```
 
-- FastAPI 版本化接口和 Pydantic 参数校验
-- LangGraph 状态工作流、线程 ID 和 Checkpoint（检查点）
-- 小红书、抖音、淘宝、京东平台文案结构
-- 品牌语气与品类规则检索接口
-- 禁用词、绝对化表述、标题长度和可读性检查
-- 完整节点执行轨迹，方便评测、排错和面试演示
-- Mock 模式、自动化测试、Docker 镜像与健康检查
-- 多模态商品图片分析，输出视觉优势、风险、布局建议和置信度
-- OpenAI Responses API + Pydantic Structured Outputs（结构化输出）
-- 独立海报生成接口，可接收 GPT Image 返回的 Base64 PNG
-- 品牌知识文档增量写入和品牌、品类元数据过滤
-- BM25 关键词召回＋Dense 向量召回＋RRF 排名融合
-- Milvus 原生 BM25 与多向量混合检索生产适配器
-- 商品目录的新增、更新、版本号和搜索接口
-- 生成结果携带文档 ID、来源和融合分数，支持引用溯源
-- Draft → Pending Review → Approved/Rejected → Published 审批状态机
-- 四眼原则：审核人与内容提交人必须不同
-- 内容修改生成不可变版本，重新审核后才能发布
-- 发布幂等键、单平台错误隔离和 Partial Failed（部分失败）状态
-- 小红书、抖音、淘宝、京东发布适配器接口及确定性 Mock 实现
-- 追加式审计日志，记录操作者、动作、版本和审核理由
-- 可切换的内存或 SQLAlchemy 状态存储，兼容 SQLite 与 PostgreSQL
-- 可切换的内存或 Redis 发布幂等存储，并配置结果 TTL
-- Prometheus HTTP 与业务指标，暴露于 `/metrics`
-- 版本化 RAG 回归集，计算 Recall@K、MRR 和引用覆盖率
-- CI 自动执行单元测试、Ruff 检查和 RAG 回归评测
-- Amazon、TikTok Shop 统一订单网关，可替换官方 API 适配器
-- ERP 库存查询、库存预占和补货任务接口
-- LangGraph 订单工作流：校验 → 查库存 → 决策 → 人工复核
-- 库存充足时生成履约方案，库存不足时阻断履约并生成补货方案
-- 外部写操作四眼审批、订单级幂等、步骤级失败隔离和审计日志
-- 飞书审批通知接口及确定性 Mock 实现
-- 响应式运营控制台，集中展示订单、库存证据、风险、审批和执行轨迹
-- 商品创作任务模型，支持多角度图、模特试穿图、海报和视频产物清单
-- Skill 与 Plugin 分层：业务流程不直接绑定 ComfyUI 或即梦 AI 供应商
-- ComfyUI、即梦 AI 确定性 Mock 插件，可验证能力选择和错误边界
-- 可查询的创作任务状态、执行轨迹和 Mock SVG 预览素材
-- 竞品视觉分析 Skill：构图、色彩、场景、卖点和品牌差异五维对比
-- 多模态视觉分析 Mock 插件，明确区分模板演示与真实像素分析
-- 三套差异化创作 Brief（创作简报）和禁止直接复制的合规边界
-- AI 海报设计 Skill，支持平台尺寸、风格、品牌颜色和插件选择
-- 可编辑商品、标题、副标题、价格、按钮、位置与缩放图层
-- 海报项目版本管理，以及服务端 SVG 和浏览器端 PNG 导出
-- 商品智能上架 Skill，将商品图、模特图、海报、文案、价格和库存组装为上架包
-- Amazon、TikTok Shop、Shopify 三套字段与素材规则映射
-- 上架包 Draft → Pending Review → Approved/Rejected → Published 状态机
-- 发布前四眼审核、发布幂等键、平台级 Mock 外部 ID 和完整审计轨迹
-- 经营指标快照模型，统一曝光、点击、加购、订单、销量、收入、广告、退货与库存口径
-- 自动计算 CTR、加购率、转化率、ROAS、退货率和库存覆盖天数
-- 电商经营优化 Skill，输出平台对比、数字证据、优先级和可执行实验建议
-- 只读分析边界：Agent 不直接改图、改价、调广告或补货，后续写操作仍需人工审核
-- Mock 平台数据连接器及数据质量提示，不将演示指标描述为真实经营业绩
-- 统一 `/app` 产品入口，通过同一侧边栏切换全部电商业务模块
-- 对话任务入口把自然语言拆成模块执行计划，默认停在外部写操作之前
-- 可编辑 Skill 插件清单：创建、手动编辑、自动修订、版本递增、启用与停用
-- Skill 自动修订后回到 Draft（草稿），重新启用后才能进入调用计划
-- 外部服务中心统一管理 Base URL、能力、模式、鉴权方式和密钥引用
-- 内置 ComfyUI、即梦 AI、Amazon、TikTok Shop、Shopify、ERP 和飞书 Mock 连接器
-- Live 连接器未真实联调时保持 Pending Configuration，不虚构连接成功
+More documents:
 
-## Quick start
+- [Product Requirements](docs/PRD.md)
+- [Architecture Notes](docs/ARCHITECTURE.md)
+- [API examples](examples.http)
+
+## Quick Start
+
+### 1. Install
 
 ```bash
 cp .env.example .env
 python -m venv .venv
 source .venv/bin/activate
 pip install -e ".[dev]"
+```
+
+Windows PowerShell:
+
+```powershell
+copy .env.example .env
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -e ".[dev]"
+```
+
+### 2. Run
+
+```bash
 uvicorn app.main:app --reload
 ```
 
-打开 `http://localhost:8000/app` 进入统一产品工作台。全部专业模块、Skill 插件和外部服务均从该入口访问；`http://localhost:8000/docs` 提供接口文档。
+Open these pages:
 
-控制台右侧表单可以一键完成：
+| Page | URL |
+| --- | --- |
+| Web app | http://localhost:8000/app |
+| API docs | http://localhost:8000/docs |
+| Metrics | http://localhost:8000/metrics |
 
-1. 写入 Mock ERP 库存；
-2. 写入 Amazon/TikTok Shop Mock 订单；
-3. 由 Agent 拉取订单并生成履约或补货建议；
-4. 在详情区批准、拒绝或执行外部操作。
+### 3. Test
 
 ```bash
 pytest
@@ -134,121 +129,27 @@ ruff check app scripts tests
 python -m scripts.evaluate_rag --top-k 1
 ```
 
-Docker 启动：
+### 4. Docker
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
 
-## API
+## Real API Configuration
 
-`POST /api/v1/campaigns/generate`
+The default provider is Mock mode, so the project can run without external credentials.
 
-输入包含商品 SKU、名称、品类、描述、结构化属性、目标用户、平台与品牌 ID。输出包含：
-
-- 可追溯商品卖点
-- 本次使用的品牌规则
-- 各平台标题、正文、标签和行动引导
-- 可交给图像模型的海报 Prompt（提示词）
-- 质量分数、风险项、审核状态和节点轨迹
-
-`POST /api/v1/posters/generate`
-
-接收工作流生成的海报 Prompt，并返回图片生成状态、模型、MIME 类型和 Base64 图片数据。Mock 模式仅返回可验证的占位响应，不产生调用费用。
-
-`POST /api/v1/knowledge/documents`：增量写入品牌知识文档。
-
-`POST /api/v1/knowledge/search`：按品牌和品类执行混合检索。
-
-`PUT /api/v1/products/{sku}`：新增或更新商品，自动递增版本号。
-
-`POST /api/v1/products/search/query`：搜索商品目录。
-
-`POST /api/v1/campaigns/{id}/versions`：创建内容新版本。
-
-`POST /api/v1/campaigns/{id}/submit-review`：提交人工审核。
-
-`POST /api/v1/campaigns/{id}/decision`：批准或驳回当前版本。
-
-`POST /api/v1/campaigns/{id}/publish`：幂等发布已批准版本。
-
-`PUT /api/v1/operations/inventory/{sku}`：写入 ERP 库存演示数据。
-
-`PUT /api/v1/operations/platform-orders/{channel}/{order_id}`：写入 Mock 平台订单。
-
-`POST /api/v1/operations/platform-orders/{channel}/{order_id}/process`：通过平台网关拉取订单并生成运营决策。
-
-`POST /api/v1/operations/runs/{id}/decision`：人工批准或拒绝外部写操作。
-
-`POST /api/v1/operations/runs/{id}/execute`：幂等执行库存预占、履约或补货任务。
-
-`GET /api/v1/operations/runs`：查看运营任务、风险、执行轨迹和异常结果。
-
-`GET /metrics`：返回 Prometheus 格式的 HTTP、内容生成和发布指标。
-
-`GET /api/v1/creation/skills`：查看已安装的电商创作 Skill。
-
-`GET /api/v1/creation/plugins`：查看 ComfyUI、即梦 AI 等创作插件及其能力状态。
-
-`POST /api/v1/creation/uploads`：上传 PNG、JPEG 或 WebP 商品图，执行大小、类型和文件签名校验。
-
-`POST /api/v1/creation/tasks`：提交商品素材创作任务，返回标准化素材清单和执行轨迹。
-
-`GET /api/v1/creation/tasks/{id}`：查询创作任务状态和生成结果。
-
-`POST /api/v1/creation/competitor-analyses`：提交自己的商品图和竞品图，生成结构化对比报告。
-
-`GET /api/v1/creation/competitor-analyses/{id}`：查询竞品分析维度、机会点和差异化创作方案。
-
-`POST /api/v1/poster-projects`：使用上传商品图创建可编辑海报项目。
-
-`PUT /api/v1/poster-projects/{id}`：保存海报文字、颜色、位置和尺寸的新版本。
-
-`GET /api/v1/poster-projects/{id}/preview.svg`：预览或下载服务端渲染的 SVG 海报。
-
-`POST /api/v1/listing-packages`：组合已完成的创作任务、可选海报和商品资料，生成多平台上架草稿。
-
-`POST /api/v1/listing-packages/{id}/submit-review`：冻结草稿并提交人工审核。
-
-`POST /api/v1/listing-packages/{id}/decision`：由不同审核人批准或驳回上架包。
-
-`POST /api/v1/listing-packages/{id}/publish`：使用幂等键向 Amazon、TikTok Shop 和 Shopify 适配器发布已批准草稿。
-
-`POST /api/v1/performance/snapshots`：写入并校验单个平台经营指标快照，自动计算派生指标。
-
-`POST /api/v1/performance/packages/{id}/demo-snapshots`：为已发布上架包拉取三平台 Mock 演示数据。
-
-`POST /api/v1/performance/packages/{id}/analyze`：运行经营优化 Skill，生成带证据和优先级的只读建议。
-
-`GET /api/v1/performance/reports/{id}`：查询分析报告、平台对比、数据质量提示和执行轨迹。
-
-`GET /api/v1/platform/skill-plugins`：查询内置与自定义 Skill 插件清单。
-
-`POST /api/v1/platform/skill-plugins`：创建可编辑的自定义 Skill 草稿。
-
-`POST /api/v1/platform/skill-plugins/{id}/auto-edit`：根据修改要求生成新版本并回到草稿态。
-
-`POST /api/v1/platform/skill-plugins/{id}/status`：显式启用或停用自定义 Skill。
-
-`POST /api/v1/platform/skill-plugins/{id}/invoke`：解析已启用 Skill 的能力和工具绑定，生成安全调用计划。
-
-`GET /api/v1/platform/external-services`：查询外部服务适配器、能力与连接状态。
-
-`POST /api/v1/platform/external-services`：注册 Mock 或 Live 外部接口配置，仅保存密钥引用。
-
-`POST /api/v1/platform/external-services/{id}/health`：检查 Mock 可用性或返回 Live 待联调边界。
-
-真实模型模式：
+### DeepSeek
 
 ```bash
-GENERATION_MODE=openai
+GENERATION_MODE=openai_compatible
 OPENAI_API_KEY=
-OPENAI_MODEL=gpt-4.1-mini
-OPENAI_IMAGE_MODEL=gpt-image-2
+OPENAI_BASE_URL=https://api.deepseek.com
+OPENAI_MODEL=deepseek-chat
 ```
 
-OpenAI Chat Completions 兼容模型（例如阿里云百炼/千问）：
+### Qwen Compatible Mode
 
 ```bash
 GENERATION_MODE=openai_compatible
@@ -257,9 +158,16 @@ OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
 OPENAI_MODEL=qwen-plus
 ```
 
-兼容模式用于商品卖点、平台文案和视觉分析；`/api/v1/posters/generate` 的图片生成仍使用 OpenAI Images API。
+### OpenAI
 
-通义万相文生图模式：
+```bash
+GENERATION_MODE=openai
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_IMAGE_MODEL=gpt-image-2
+```
+
+### Tongyi Wanxiang
 
 ```bash
 IMAGE_GENERATION_MODE=wanx
@@ -267,27 +175,29 @@ DASHSCOPE_API_KEY=
 WANX_BASE_URL=https://dashscope.aliyuncs.com/api/v1
 WANX_MODEL=wan2.6-t2i
 WANX_SIZE=1280*1280
+WANX_POLL_INTERVAL_SECONDS=2
+WANX_TIMEOUT_SECONDS=120
 ```
 
-该模式只影响 `/api/v1/posters/generate`，不会改变文案模型。后端会提交异步生图任务、轮询完成结果，并以 Base64 PNG 返回。
-
-Milvus 生产检索模式：
+### LangSmith
 
 ```bash
-pip install -e ".[rag]"
-RETRIEVAL_MODE=milvus
-MILVUS_URI=http://localhost:19530
-MILVUS_TOKEN=
+LANGSMITH_TRACING=true
+LANGSMITH_API_KEY=
+LANGSMITH_PROJECT=marketcraft-ai-local
+LANGSMITH_ENDPOINT=https://api.smith.langchain.com
 ```
 
-SQLite 持久化模式：
+### Persistence
+
+SQLite:
 
 ```bash
 PERSISTENCE_MODE=database
 DATABASE_URL=sqlite+pysqlite:///./marketcraft.db
 ```
 
-PostgreSQL 与 Redis 模式已在 `docker-compose.yml` 中编排：
+PostgreSQL and Redis:
 
 ```bash
 PERSISTENCE_MODE=database
@@ -296,38 +206,121 @@ IDEMPOTENCY_MODE=redis
 REDIS_URL=redis://redis:6379/0
 ```
 
-运行 Compose 前需在未提交的 `.env` 中设置 `POSTGRES_PASSWORD`；仓库不提供默认密码。
+Milvus retrieval:
 
-完整请求示例见 [examples.http](examples.http)。
+```bash
+pip install -e ".[rag]"
+RETRIEVAL_MODE=milvus
+MILVUS_URI=http://localhost:19530
+MILVUS_TOKEN=
+```
 
-## Delivery roadmap
+## Product Routes
 
-| Phase | Deliverable | Interview value |
+| Route | Description |
+| --- | --- |
+| `/app` | Unified product shell |
+| `/campaign-studio` | Marketing copy generation |
+| `/image-studio` | Text-to-image studio |
+| `/studio` | Product creation workspace |
+| `/competitors` | Competitor visual analysis |
+| `/poster-editor` | Editable poster editor |
+| `/listing-workbench` | Multi-platform listing workflow |
+| `/performance-insights` | Performance analysis |
+| `/dashboard` | Order and inventory dashboard |
+
+## API Map
+
+### Campaigns
+
+| Method | Endpoint | Purpose |
 | --- | --- | --- |
-| 1 | 商品输入 → 文案 → 海报 Prompt → 质检 | FastAPI、LangGraph、结构化输出、异常与质量控制 |
-| 2 ✅ | 商品图片理解、真实 LLM、海报生成 | 多模态模型、结构化输出、供应商抽象 |
-| 3 ✅ | 品牌 RAG、商品库、混合召回 | Milvus、BM25、RRF、引用溯源 |
-| 4 ✅ | 人工审核、版本管理、多平台发布 | Human-in-the-loop、四眼原则、幂等与审计 |
-| 5 ✅ | 评测、监控、Redis/PostgreSQL、部署 | 可重复评测、可观测性、可靠性与工程化 |
-| 6 ✅ | 订单、库存、履约、补货与飞书审批 | 跨系统 Agent、Human-in-the-loop、业务闭环 |
-| 7 ✅ | 电商运营管理控制台 | 可视化演示、业务状态与执行轨迹 |
-| 8 ✅ | AI 商品素材、竞品分析、海报与多平台上架 | 多模态生成、插件架构、四眼审批与商品一致性 |
-| 9 ✅ | 经营数据回流与 AI 优化建议 | 指标体系、跨平台分析、证据驱动建议与安全边界 |
-| 10 ✅ | 统一产品外壳、Skill 插件与外部服务中心 | 单入口产品、插件生命周期、适配器边界与安全调用计划 |
+| `POST` | `/api/v1/campaigns/generate` | Generate selling points, platform copy and poster prompt |
+| `GET` | `/api/v1/campaigns/{id}` | Read campaign lifecycle |
+| `POST` | `/api/v1/campaigns/{id}/versions` | Create immutable content version |
+| `POST` | `/api/v1/campaigns/{id}/submit-review` | Submit campaign for review |
+| `POST` | `/api/v1/campaigns/{id}/decision` | Approve or reject campaign |
+| `POST` | `/api/v1/campaigns/{id}/publish` | Idempotent platform publish |
 
-## Engineering decisions
+### Image & Poster
 
-- 使用 Workflow（固定工作流）作为主链路，保证营销生产过程稳定、可审计；只在创意生成和工具选择等局部使用 Agent 自主性。
-- 所有生成器都通过 `ContentGenerator` 接口接入，Mock、OpenAI 兼容接口或本地模型可以互换。
-- 生成结果必须经过独立质量节点，不能让同一次生成直接充当审核结论。
-- 默认内存模式降低演示成本；通过环境变量可切换 SQLAlchemy 持久化与 Redis 幂等缓存。
-- 订单决策使用确定性工作流；所有会修改库存或创建任务的操作必须先经过不同操作者审批。
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `POST` | `/api/v1/posters/generate` | Generate image from text prompt |
+| `POST` | `/api/v1/poster-projects` | Create editable poster project |
+| `PUT` | `/api/v1/poster-projects/{id}` | Save poster revision |
+| `GET` | `/api/v1/poster-projects/{id}/preview.svg` | Render server-side SVG preview |
 
-## Verification boundary
+### Products & Knowledge
 
-- 已在无外部服务模式验证：48 个自动化测试、Ruff、内存模式、SQLite 跨服务实例持久化、Mock 发布与订单操作幂等、经营指标分析、Skill 生命周期、外部服务边界、统一工作台页面和 Prometheus 指标端点。
-- 仓库内 4 条演示 RAG 回归样例在 `top_k=1` 时 Recall@1、MRR、引用覆盖率均为 1.0；该小样本结果仅用于回归，不代表生产效果。
-- 已实现但未在本环境联调：PostgreSQL、Redis、Amazon/TikTok Shop/ERP/飞书真实接口，以及需要密钥或模型权重的 OpenAI/BGE 适配器。
-- Milvus Lite + HashEmbedding 曾完成本地适配验证；生产 Milvus 服务仍需按实际部署环境联调。
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `PUT` | `/api/v1/products/{sku}` | Create or update product |
+| `POST` | `/api/v1/products/search/query` | Search catalog |
+| `POST` | `/api/v1/knowledge/documents` | Add brand knowledge |
+| `POST` | `/api/v1/knowledge/search` | Hybrid brand retrieval |
 
-更完整的设计见 [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)。
+### Operations
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `PUT` | `/api/v1/operations/inventory/{sku}` | Write demo ERP stock |
+| `PUT` | `/api/v1/operations/platform-orders/{channel}/{order_id}` | Write mock platform order |
+| `POST` | `/api/v1/operations/platform-orders/{channel}/{order_id}/process` | Process order through workflow |
+| `POST` | `/api/v1/operations/runs/{id}/decision` | Human approval |
+| `POST` | `/api/v1/operations/runs/{id}/execute` | Execute approved operation |
+| `GET` | `/api/v1/operations/runs` | List operation runs |
+
+### Platform Extensions
+
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| `GET` | `/api/v1/platform/skill-plugins` | List skills |
+| `POST` | `/api/v1/platform/skill-plugins` | Create custom skill draft |
+| `POST` | `/api/v1/platform/skill-plugins/{id}/auto-edit` | Generate skill revision |
+| `POST` | `/api/v1/platform/skill-plugins/{id}/status` | Enable or disable skill |
+| `GET` | `/api/v1/platform/external-services` | List service adapters |
+| `POST` | `/api/v1/platform/external-services` | Register service adapter |
+| `POST` | `/api/v1/platform/external-services/{id}/health` | Check adapter boundary |
+
+## Engineering Notes
+
+- The system uses deterministic workflows around AI calls, so results remain auditable.
+- LLM and image providers are isolated behind service interfaces.
+- External write operations require review, idempotency keys and audit records.
+- Mock mode is safe for demos, tests and offline development.
+- Real integrations are enabled only through explicit environment variables.
+
+## Verification
+
+Last validated locally:
+
+```bash
+pytest tests/test_api.py tests/test_poster_projects.py -q
+# 16 passed
+```
+
+The broader test suite covers campaign workflow, product catalog versions, retrieval, poster projects, listing packages, order operations, performance insights, persistence boundaries, skill lifecycle and external service boundaries.
+
+## Security Boundary
+
+- `.env` is ignored and should never be committed.
+- Real API keys should live only in local `.env`, deployment secrets or a secrets manager.
+- External write operations stay behind human review.
+- Mock data is clearly marked and should not be presented as real business performance.
+
+## Roadmap
+
+| Phase | Focus |
+| --- | --- |
+| 1 | Marketing copy workflow and quality checks |
+| 2 | Real LLM and image providers |
+| 3 | Brand RAG and product catalog |
+| 4 | Human review, versioning and idempotent publishing |
+| 5 | Metrics, persistence, Redis and PostgreSQL deployment |
+| 6 | Order, inventory, fulfillment and restock |
+| 7 | Unified operations dashboard |
+| 8 | Product creation, competitor analysis and poster editor |
+| 9 | Performance feedback and read-only recommendations |
+| 10 | Unified AI workspace, skill registry and external service hub |
+
