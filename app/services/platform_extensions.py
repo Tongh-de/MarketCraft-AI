@@ -38,6 +38,7 @@ BUILT_IN_TOOL_BINDINGS = {
     "poster-design": ["poster.create_project", "poster.update_project"],
     "product-listing-package": ["listing.create_package", "listing.submit_review"],
     "commerce-performance-optimization": ["performance.load", "performance.analyze"],
+    "monthly-outfit-advisor": ["agent.intent", "fashion.calendar"],
 }
 
 

@@ -489,3 +489,100 @@
   line-height: 1.7;
   white-space: pre-wrap;
 }
+
+
+.agent-trace-card {
+  margin-top: 10px;
+  padding: 11px;
+  background: #f7faf8;
+  border: 1px solid #dfe9e2;
+  border-radius: 10px;
+}
+
+.agent-trace-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.agent-trace-head span {
+  color: #5b6a62;
+  font-size: 7px;
+  font-weight: 850;
+  letter-spacing: .08em;
+}
+
+.agent-trace-head strong {
+  color: #164d39;
+  font-size: 10px;
+}
+
+.agent-trace-card ol {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.agent-trace-card li {
+  display: grid;
+  grid-template-columns: 12px 1fr;
+  gap: 7px;
+  align-items: start;
+  color: #7b8780;
+  font-size: 9px;
+  line-height: 1.45;
+}
+
+.agent-trace-card li i {
+  width: 8px;
+  height: 8px;
+  margin-top: 3px;
+  background: #d8e1dc;
+  border-radius: 999px;
+}
+
+.agent-trace-card li.running {
+  color: #184f3a;
+  font-weight: 750;
+}
+
+.agent-trace-card li.running i {
+  background: var(--green);
+  box-shadow: 0 0 0 5px rgba(22, 99, 72, .1);
+  animation: trace-pulse 1s ease-in-out infinite;
+}
+
+.agent-trace-card li.done {
+  color: #2c6f51;
+}
+
+.agent-trace-card li.done i {
+  background: var(--lime);
+}
+
+.agent-final-result {
+  margin-top: 10px;
+}
+
+.agent-final-result.revealing {
+  opacity: .35;
+  transform: translateY(4px);
+}
+
+@keyframes trace-pulse {
+  50% { transform: scale(1.25); }
+}
+
+
+.agent-final-result .chat-copy-card {
+  background: #fbfdfb;
+}
+
+.agent-final-result .chat-copy-card span {
+  color: #15583f;
+  font-weight: 850;
+}

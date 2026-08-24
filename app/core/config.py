@@ -38,6 +38,11 @@ class Settings(BaseSettings):
     idempotency_ttl_seconds: int = 604800
     upload_dir: str = "./data/uploads"
     max_upload_bytes: int = 10485760
+    feishu_approval_mode: Literal["mock", "webhook"] = "mock"
+    feishu_webhook_url: str | None = None
+    feishu_webhook_secret: str | None = None
+    feishu_approval_base_url: str | None = None
+    feishu_request_timeout_seconds: float = 10
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

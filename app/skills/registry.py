@@ -3,6 +3,7 @@ from functools import lru_cache
 from app.domain.creation import SkillDescriptor
 from app.skills.base import EcommerceSkill, SkillNotFoundError
 from app.skills.competitor_analysis import CompetitorVisualAnalysisSkill
+from app.skills.outfit_advisor import MonthlyOutfitAdvisorSkill
 from app.skills.performance_optimization import CommercePerformanceOptimizationSkill
 from app.skills.poster_design import PosterDesignSkill
 from app.skills.product_assets import ProductAssetGenerationSkill
@@ -17,6 +18,7 @@ class SkillRegistry:
             PosterDesignSkill(),
             ProductListingPackageSkill(),
             CommercePerformanceOptimizationSkill(),
+            MonthlyOutfitAdvisorSkill(),
         ]
         self._skills = {skill.descriptor.skill_id: skill for skill in installed}
 

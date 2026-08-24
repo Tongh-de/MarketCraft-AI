@@ -130,6 +130,7 @@ const moduleSteps = {
 
 function inferModules(prompt) {
   const candidates = [];
+  if (/\u8fd9\u4e2a\u6708.*\u7a7f|\u7a7f\u4ec0\u4e48|\u7a7f\u642d|\u642d\u914d|\u9002\u5408\u7a7f|ootd|outfit/i.test(prompt)) candidates.push("outfit");
   if (/文生图|生图|生成图片|图片|主图|商品图|海报|poster/i.test(prompt)) candidates.push("image");
   if (/文案|小红书|抖音|种草|标题|卖点|营销/.test(prompt)) candidates.push("campaign");
   if (/多角度|模特|素材|试穿/.test(prompt)) candidates.push("studio");
@@ -143,7 +144,7 @@ function inferModules(prompt) {
 function isCasualChat(prompt) {
   const text = prompt.trim();
   if (/^(你好|您好|hello|hi|嗨|在吗|你是谁|你能做什么|怎么用|帮我介绍一下|介绍一下)$/i.test(text)) return true;
-  return text.length <= 18 && !/生成|写|文案|图片|图|海报|主图|商品|小红书|抖音|竞品|上架|订单|库存|数据/.test(text);
+  return text.length <= 18 && !/生成|写|文案|图片|图|海报|主图|商品|小红书|抖音|竞品|上架|订单|库存|数据|穿搭|穿什么|搭配/.test(text);
 }
 
 function imagePayload(prompt) {
@@ -206,6 +207,154 @@ function bindResultButtons(scope) {
   scope.querySelectorAll("[data-open-result]").forEach((button) => button.addEventListener("click", (event) => switchView(event.currentTarget.dataset.openResult)));
 }
 
+
+const agentSkills = {
+  outfit: {
+    label: "\u672c\u6708\u7a7f\u642d\u5efa\u8bae Skill",
+    badge: "OUTFIT ADVISOR",
+    steps: [
+      "\u8bc6\u522b\u6708\u4efd\u548c\u573a\u666f",
+      "\u5224\u65ad\u5b63\u8282\u548c\u4f53\u611f",
+      "\u6574\u7406\u5355\u54c1\u548c\u642d\u914d",
+      "\u8f93\u51fa\u5546\u54c1\u673a\u4f1a",
+    ],
+  },
+  image: {
+    label: "\u6587\u751f\u56fe Skill",
+    badge: "TEXT TO IMAGE",
+    steps: [
+      "\u7406\u89e3\u56fe\u7247\u9700\u6c42\u548c\u7535\u5546\u573a\u666f",
+      "\u6574\u7406\u7ed9\u901a\u4e49\u4e07\u76f8\u7684\u63d0\u793a\u8bcd",
+      "\u8c03\u7528\u6587\u751f\u56fe API",
+      "\u68c0\u67e5\u56fe\u7247\u6570\u636e\u5e76\u8fd4\u56de\u7ed3\u679c",
+    ],
+  },
+  campaign: {
+    label: "\u8425\u9500\u6587\u6848 Skill",
+    badge: "COPY GENERATION",
+    steps: [
+      "\u8bc6\u522b\u5546\u54c1\u3001\u573a\u666f\u548c\u5e73\u53f0\u8bed\u6c14",
+      "\u7ec4\u88c5\u5546\u54c1\u8d44\u6599\u548c\u7981\u7528\u8bdd\u672f",
+      "\u8c03\u7528\u771f\u5b9e\u6587\u6848\u6a21\u578b",
+      "\u68c0\u67e5\u5356\u70b9\u3001\u8d28\u91cf\u5206\u548c\u5e73\u53f0\u6587\u6848",
+    ],
+  },
+  studio: {
+    label: "\u5546\u54c1\u521b\u4f5c Skill",
+    badge: "PRODUCT CREATION",
+    steps: [
+      "\u8bc6\u522b\u5546\u54c1\u7d20\u6750\u9700\u6c42",
+      "\u5224\u65ad\u9700\u8981\u56fe\u7247\u4e0a\u4f20\u548c\u4efb\u52a1\u8868\u5355",
+      "\u51c6\u5907\u8fdb\u5165\u5546\u54c1\u521b\u4f5c\u6a21\u5757",
+    ],
+  },
+  competitors: {
+    label: "\u7ade\u54c1\u5206\u6790 Skill",
+    badge: "COMPETITOR",
+    steps: [
+      "\u8bc6\u522b\u7ade\u54c1\u548c\u5bf9\u6807\u9700\u6c42",
+      "\u51c6\u5907\u8fdb\u5165\u7ade\u54c1\u89c6\u89c9\u5206\u6790\u6a21\u5757",
+    ],
+  },
+  poster: {
+    label: "\u6d77\u62a5\u8bbe\u8ba1 Skill",
+    badge: "POSTER",
+    steps: [
+      "\u8bc6\u522b\u6d77\u62a5\u573a\u666f\u548c\u5546\u54c1\u4e3b\u4f53",
+      "\u51c6\u5907\u8fdb\u5165\u53ef\u7f16\u8f91\u6d77\u62a5\u5de5\u4f5c\u53f0",
+    ],
+  },
+  listing: {
+    label: "\u4e0a\u67b6\u5ba1\u6838 Skill",
+    badge: "LISTING",
+    steps: [
+      "\u8bc6\u522b\u5e73\u53f0\u4e0a\u67b6\u9700\u6c42",
+      "\u51c6\u5907\u8fdb\u5165\u5ba1\u6838\u4e0e\u4e0a\u67b6\u6a21\u5757",
+    ],
+  },
+  performance: {
+    label: "\u7ecf\u8425\u4f18\u5316 Skill",
+    badge: "PERFORMANCE",
+    steps: [
+      "\u8bc6\u522b\u7ecf\u8425\u6570\u636e\u548c\u4f18\u5316\u95ee\u9898",
+      "\u51c6\u5907\u8fdb\u5165\u7ecf\u8425\u4f18\u5316\u6a21\u5757",
+    ],
+  },
+  operations: {
+    label: "\u8ba2\u5355\u5e93\u5b58 Skill",
+    badge: "OPERATIONS",
+    steps: [
+      "\u8bc6\u522b\u8ba2\u5355\u3001\u5e93\u5b58\u6216\u5c65\u7ea6\u9700\u6c42",
+      "\u51c6\u5907\u8fdb\u5165\u8fd0\u8425\u63a7\u5236\u53f0",
+    ],
+  },
+};
+
+function intentLabel(module) {
+  return agentSkills[module]?.label || "\u901a\u7528\u7535\u5546 Agent";
+}
+
+function traceHtml(module, activeIndex = 0, done = false) {
+  const skill = agentSkills[module] || agentSkills.campaign;
+  return `<div class="agent-trace-card"><div class="agent-trace-head"><span>${escapeHtml(skill.badge)}</span><strong>${escapeHtml(skill.label)}</strong></div><ol>${skill.steps.map((step, index) => {
+    const status = done || index < activeIndex ? "done" : index === activeIndex ? "running" : "pending";
+    return `<li class="${status}"><i></i><span>${escapeHtml(step)}</span></li>`;
+  }).join("")}</ol></div>`;
+}
+
+function workingHtml(module, note) {
+  return `<strong>${escapeHtml(intentLabel(module))}</strong><p>${escapeHtml(note)}</p>${traceHtml(module, 0)}`;
+}
+
+async function runTrace(message, module, beforeCallIndex) {
+  const skill = agentSkills[module] || agentSkills.campaign;
+  for (let index = 0; index <= beforeCallIndex; index += 1) {
+    replaceChat(message, `<strong>${escapeHtml(skill.label)}</strong><p>${escapeHtml(skill.steps[index] || "\u6b63\u5728\u6267\u884c")}</p>${traceHtml(module, index)}`);
+    await wait(420);
+  }
+}
+
+async function revealFinalHtml(message, module, html) {
+  replaceChat(message, `${traceHtml(module, 999, true)}<div class="agent-final-result revealing">${html}</div>`);
+  await wait(120);
+  const result = message.querySelector(".agent-final-result");
+  if (result) result.classList.remove("revealing");
+}
+
+function outfitAdviceHtml(prompt) {
+  const month = new Intl.DateTimeFormat("zh-CN", { month: "long" })
+    .format(new Date());
+  const office = /\u901a\u52e4|\u4e0a\u73ed|office|\u804c\u573a/i.test(prompt);
+  const travel = /\u65c5\u884c|\u51fa\u6e38|\u6237\u5916|\u5468\u672b/i.test(prompt);
+  const scene = office ? "\u901a\u52e4" : travel ? "\u51fa\u6e38" : "\u65e5\u5e38";
+  const items = office
+    ? ["\u8f7b\u8584\u9488\u7ec7\u886b", "\u76f4\u7b52\u88e4", "\u8584\u5916\u5957"]
+    : travel
+      ? ["\u9632\u6652\u5916\u5957", "\u901f\u5e72 T \u6064", "\u5bbd\u677e\u957f\u88e4"]
+      : ["\u900f\u6c14\u4e0a\u8863", "\u5bbd\u677e\u88e4\u88c5", "\u8584\u5f00\u886b"];
+  const combos = office
+    ? ["\u886c\u886b + \u9614\u817f\u88e4 + \u8584\u897f\u88c5", "\u9488\u7ec7\u77ed\u8896 + \u76f4\u7b52\u88e4"]
+    : travel
+      ? ["\u901f\u5e72 T \u6064 + \u9632\u6652\u5916\u5957", "\u8f7b\u8584\u886c\u886b + \u5de5\u88c5\u88e4"]
+      : ["\u900f\u6c14\u4e0a\u8863 + \u5bbd\u677e\u88e4\u88c5", "\u8584\u5f00\u886b + \u57fa\u7840\u5185\u642d"];
+  const commerce = [
+    "\u5173\u952e\u8bcd\uff1a\u8f7b\u8584\u3001\u900f\u6c14\u3001\u663e\u7626\u3002",
+    "\u5185\u5bb9\uff1a\u7528\u2018\u672c\u6708\u4e0d\u77e5\u9053\u7a7f\u4ec0\u4e48\u2019\u5207\u5165\u3002",
+    "\u7ec4\u5408\uff1a\u4e0a\u8863 + \u4e0b\u88c5 + \u8584\u5916\u5957\u3002",
+  ];
+  return `<strong>${month}${scene}\u7a7f\u642d\u5efa\u8bae</strong>` +
+    `<p>\u5df2\u89e6\u53d1\u300c\u672c\u6708\u7a7f\u642d\u5efa\u8bae Skill\u300d\u3002</p>` +
+    `<div class="chat-copy-list">` +
+    `<article class="chat-copy-card"><span>\u63a8\u8350\u5355\u54c1</span><p>` +
+    `${items.map((x) => `? ${escapeHtml(x)}`).join("<br>")}` +
+    `</p></article><article class="chat-copy-card">` +
+    `<span>\u642d\u914d\u65b9\u6848</span><p>` +
+    `${combos.map((x) => `? ${escapeHtml(x)}`).join("<br>")}` +
+    `</p></article><article class="chat-copy-card">` +
+    `<span>\u7535\u5546\u673a\u4f1a\u70b9</span><p>` +
+    `${commerce.map((x) => `? ${escapeHtml(x)}`).join("<br>")}` +
+    `</p></article></div>`;
+}
 function imageResultHtml(result) {
   const src = `data:${result.mime_type};base64,${result.image_base64}`;
   return `<strong>图片生成好了。</strong><p>${escapeHtml(result.model)} · ${escapeHtml(result.status)}</p><img src="${src}" alt="AI 生成图片" /><div class="chat-result-actions"><a href="${src}" download="marketcraft-agent-image.png">下载 PNG</a><button type="button" data-open-result="image">打开文生图窗口</button></div>`;
@@ -233,41 +382,58 @@ elements.commandForm.addEventListener("submit", async (event) => {
 
   const button = elements.commandForm.querySelector("button[type='submit']");
   const modules = inferModules(prompt);
+  const module = modules[0];
   document.body.classList.add("chat-active");
   elements.agentPlan.hidden = true;
   appendChat("user", `<p>${escapeHtml(prompt)}</p>`);
-  const agentMessage = appendChat("agent", `<strong>收到，我来处理。</strong><p>${escapeHtml(moduleSteps[modules[0]] || "分析任务")}，完成后把结果发回这里。</p>`);
+  const agentMessage = appendChat(
+    "agent",
+    workingHtml(module, "\u6211\u5148\u5224\u65ad\u4efb\u52a1\u7c7b\u578b\uff0c\u7136\u540e\u9009\u62e9\u5408\u9002\u7684 Skill\u3002")
+  );
   elements.command.value = "";
   elements.command.blur();
   elements.commandForm.classList.add("compact");
   button.disabled = true;
-  button.textContent = "■";
+  button.textContent = "\u25a0";
 
   try {
     if (isCasualChat(prompt)) {
       await streamChatText(agentMessage, casualReplyHtml(prompt));
-    } else if (modules[0] === "image") {
-      const result = await jsonRequest("/api/v1/posters/generate", { method: "POST", body: JSON.stringify(imagePayload(prompt)) });
-      if (!result.image_base64) throw new Error("图片模型未返回图片数据");
-      replaceChat(agentMessage, imageResultHtml(result));
-    } else if (modules[0] === "campaign") {
+    } else if (module === "outfit") {
+      await runTrace(agentMessage, module, 3);
+      await revealFinalHtml(agentMessage, module, outfitAdviceHtml(prompt));
+    } else if (module === "image") {
+      await runTrace(agentMessage, module, 2);
+      const result = await jsonRequest("/api/v1/posters/generate", {
+        method: "POST",
+        body: JSON.stringify(imagePayload(prompt)),
+      });
+      if (!result.image_base64) throw new Error("\u56fe\u7247\u6a21\u578b\u672a\u8fd4\u56de\u56fe\u7247\u6570\u636e");
+      replaceChat(agentMessage, `<strong>${escapeHtml(intentLabel(module))}</strong><p>\u6b63\u5728\u68c0\u67e5\u751f\u6210\u7ed3\u679c\u5e76\u7ec4\u88c5\u56fe\u7247\u5361\u7247\u3002</p>${traceHtml(module, 3)}`);
+      await wait(360);
+      await revealFinalHtml(agentMessage, module, imageResultHtml(result));
+    } else if (module === "campaign") {
+      await runTrace(agentMessage, module, 2);
       const result = await jsonRequest("/api/v1/campaigns/generate", {
         method: "POST",
         headers: { "X-Thread-ID": `agent-${Date.now()}` },
         body: JSON.stringify(campaignPayload(prompt)),
       });
-      replaceChat(agentMessage, campaignResultHtml(result));
+      replaceChat(agentMessage, `<strong>${escapeHtml(intentLabel(module))}</strong><p>\u6b63\u5728\u68c0\u67e5\u5356\u70b9\u3001\u5e73\u53f0\u6587\u6848\u548c\u8d28\u91cf\u5206\u3002</p>${traceHtml(module, 3)}`);
+      await wait(360);
+      await revealFinalHtml(agentMessage, module, campaignResultHtml(result));
     } else {
-      replaceChat(agentMessage, openModuleHtml(modules[0]));
+      await runTrace(agentMessage, module, (agentSkills[module]?.steps.length || 1) - 1);
+      await revealFinalHtml(agentMessage, module, openModuleHtml(module));
     }
     bindResultButtons(agentMessage);
-    showToast("Agent 已回复");
+    showToast("Agent \u5df2\u56de\u590d");
   } catch (error) {
-    replaceChat(agentMessage, `<strong>这次执行失败了。</strong><p>${escapeHtml(error.message)}</p>`);
+    replaceChat(agentMessage, `<strong>\u8fd9\u6b21\u6267\u884c\u5931\u8d25\u4e86\u3002</strong><p>${escapeHtml(error.message)}</p>${traceHtml(module, 999, true)}`);
     showToast(error.message, "error");
   } finally {
     button.disabled = false;
-    button.textContent = "↑";
+    button.textContent = "\u2191";
   }
 });
 

@@ -19,8 +19,8 @@ from app.services.commerce_adapters import (
     InventoryGateway,
     MockCommercePlatformGateway,
     MockERPGateway,
-    MockFeishuNotifier,
     OperationsNotifier,
+    get_operations_notifier,
 )
 from app.services.persistence import JsonStateStore, get_state_store
 from app.telemetry import traced
@@ -48,7 +48,7 @@ class OrderOperationsService:
         self.platform_gateway = platform_gateway or MockCommercePlatformGateway(
             self.state_store
         )
-        self.notifier = notifier or MockFeishuNotifier()
+        self.notifier = notifier or get_operations_notifier()
         self.graph = build_order_fulfillment_graph(self.inventory_gateway)
 
     def _save(self, run: OrderOperationRun) -> None:
@@ -126,7 +126,7 @@ class OrderOperationsService:
                 details={
                     "order_id": run.order.order_id,
                     "recommended_action": run.recommended_action.value,
-                    "review_notification": "mock_feishu",
+                    "review_notification": run.notification_id or "not_sent",
                 },
             )
         )
