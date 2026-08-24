@@ -12,6 +12,7 @@ from app.plugins.registry import CreativePluginRegistry, get_creative_plugin_reg
 from app.services.persistence import JsonStateStore, get_state_store
 from app.skills.base import SkillNotFoundError
 from app.skills.registry import SkillRegistry, get_skill_registry
+from app.telemetry import traced
 
 
 class CreationTaskNotFoundError(Exception):
@@ -35,6 +36,7 @@ class CreationTaskService:
             "creation_task", str(task.task_id), task.model_dump(mode="json")
         )
 
+    @traced("creation.task.create")
     def create(self, request: CreateCreationTaskRequest) -> CreationTask:
         task = CreationTask(
             skill_id=request.skill_id,

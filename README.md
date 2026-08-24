@@ -248,6 +248,29 @@ OPENAI_MODEL=gpt-4.1-mini
 OPENAI_IMAGE_MODEL=gpt-image-2
 ```
 
+OpenAI Chat Completions 兼容模型（例如阿里云百炼/千问）：
+
+```bash
+GENERATION_MODE=openai_compatible
+OPENAI_API_KEY=
+OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+OPENAI_MODEL=qwen-plus
+```
+
+兼容模式用于商品卖点、平台文案和视觉分析；`/api/v1/posters/generate` 的图片生成仍使用 OpenAI Images API。
+
+通义万相文生图模式：
+
+```bash
+IMAGE_GENERATION_MODE=wanx
+DASHSCOPE_API_KEY=
+WANX_BASE_URL=https://dashscope.aliyuncs.com/api/v1
+WANX_MODEL=wan2.6-t2i
+WANX_SIZE=1280*1280
+```
+
+该模式只影响 `/api/v1/posters/generate`，不会改变文案模型。后端会提交异步生图任务、轮询完成结果，并以 Base64 PNG 返回。
+
 Milvus 生产检索模式：
 
 ```bash

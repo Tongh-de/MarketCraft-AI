@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MarketCraft AI · 营销文案生成</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
+    <link rel="stylesheet" href="/static/campaign_studio.css?v=canvas-2" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="main-content campaign-main">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">CAMPAIGN COPY GENERATION</div>
+            <h1>营销文案生成</h1>
+            <p>填写商品信息后调用当前模型，生成卖点、小红书和抖音文案。</p>
+          </div>
+          <div class="live-badges">
+            <span id="modelBadge">DeepSeek 兼容模式</span>
+            <span><i class="pulse"></i>API 正常</span>
+          </div>
+        </header>
+
+        <section class="campaign-grid">
+          <article class="panel input-panel">
+            <div class="panel-heading">
+              <div><div class="eyebrow">PRODUCT BRIEF</div><h2>商品资料</h2></div>
+              <span class="mode-chip">REAL API</span>
+            </div>
+            <form id="campaignForm">
+              <div class="form-row">
+                <label><span>商品 SKU</span><input name="sku" value="CUP-001" required /></label>
+                <label><span>商品名称</span><input name="name" value="通勤保温杯" required /></label>
+              </div>
+              <div class="form-row">
+                <label><span>品类</span><input name="category" value="保温杯" required /></label>
+                <label><span>价格</span><input name="price" value="129" type="number" min="1" step="0.01" /></label>
+              </div>
+              <label><span>商品描述</span><textarea name="description" required>一款适合通勤和办公室使用的不锈钢保温杯，杯盖可拆洗。</textarea></label>
+              <label><span>目标人群</span><input name="audience" value="年轻通勤用户和办公室人群" required /></label>
+              <label><span>商品属性（一行一个，格式：名称=内容）</span><textarea name="attributes">容量=450ml
+材质=食品接触级不锈钢
+保温=6小时
+重量=约280g</textarea></label>
+              <fieldset>
+                <legend>发布平台</legend>
+                <div class="output-options">
+                  <label><input type="checkbox" name="platform" value="xiaohongshu" checked />小红书</label>
+                  <label><input type="checkbox" name="platform" value="douyin" checked />抖音</label>
+                  <label><input type="checkbox" name="platform" value="taobao" />淘宝</label>
+                  <label><input type="checkbox" name="platform" value="jd" />京东</label>
+                </div>
+              </fieldset>
+              <button class="button primary full" id="generateCampaign" type="submit">✎ 生成营销文案</button>
+            </form>
+          </article>
+
+          <article class="panel result-panel">
+            <div class="panel-heading">
+              <div><div class="eyebrow">MODEL OUTPUT</div><h2>生成结果</h2></div>
+              <span class="status-chip" id="campaignStatus">等待生成</span>
+            </div>
+            <div class="empty-result" id="emptyCampaign">
+              <div class="empty-spark">✎</div>
+              <h3>从左侧提交商品资料</h3>
+              <p>这里会展示真实模型返回的卖点、平台文案、质量分和执行轨迹。</p>
+            </div>
+            <div class="campaign-output" id="campaignOutput" hidden></div>
+          </article>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
+    <script src="/static/campaign_studio.js?v=canvas-2" defer></script>
+  </body>
+</html>

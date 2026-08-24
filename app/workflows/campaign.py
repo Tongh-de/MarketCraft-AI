@@ -15,6 +15,7 @@ from app.services.brand_repository import BrandRepository, get_brand_repository
 from app.services.generator import ContentGenerator, get_generator
 from app.services.quality import QualityService
 from app.services.vision import VisionAnalyzer, get_vision_analyzer
+from app.telemetry import traced
 
 
 class CampaignState(TypedDict):
@@ -42,18 +43,21 @@ def build_campaign_graph(
     quality_service = quality_service or QualityService()
     vision_analyzer = vision_analyzer or get_vision_analyzer()
 
+    @traced("campaign.analyze_product_visuals")
     def analyze_product_visuals(state: CampaignState) -> dict:
         return {
             "visual_analysis": vision_analyzer.analyze(state["request"]),
             "trace": ["analyze_product_visuals"],
         }
 
+    @traced("campaign.extract_selling_points")
     def extract_selling_points(state: CampaignState) -> dict:
         return {
             "selling_points": generator.extract_selling_points(state["request"]),
             "trace": [*state.get("trace", []), "extract_selling_points"],
         }
 
+    @traced("campaign.retrieve_brand_context")
     def retrieve_brand_context(state: CampaignState) -> dict:
         request = state["request"]
         query = (
@@ -72,6 +76,7 @@ def build_campaign_graph(
             "trace": [*state.get("trace", []), "retrieve_brand_context"],
         }
 
+    @traced("campaign.generate_content")
     def generate_content(state: CampaignState) -> dict:
         return {
             "copies": generator.generate_platform_copies(
@@ -83,6 +88,7 @@ def build_campaign_graph(
             "trace": [*state.get("trace", []), "generate_content"],
         }
 
+    @traced("campaign.quality_review")
     def quality_review(state: CampaignState) -> dict:
         score, issues = quality_service.review(state["request"], state["copies"])
         return {
@@ -91,6 +97,7 @@ def build_campaign_graph(
             "trace": [*state.get("trace", []), "quality_review"],
         }
 
+    @traced("campaign.package_result")
     def package_result(state: CampaignState) -> dict:
         request = state["request"]
         score = state["quality_score"]
@@ -130,6 +137,7 @@ def build_campaign_graph(
 campaign_graph = build_campaign_graph()
 
 
+@traced("api.campaign.generate")
 def run_campaign(request: CampaignRequest, thread_id: str) -> CampaignPackage:
     output = campaign_graph.invoke(
         {"request": request},

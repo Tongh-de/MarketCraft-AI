@@ -8,6 +8,7 @@ from app.domain.operations import (
     OperationAction,
 )
 from app.services.commerce_adapters import InventoryGateway
+from app.telemetry import traced
 
 
 class OrderFulfillmentState(TypedDict):
@@ -20,9 +21,11 @@ class OrderFulfillmentState(TypedDict):
 
 
 def build_order_fulfillment_graph(inventory_gateway: InventoryGateway):
+    @traced("operations.validate_order")
     def validate_order(state: OrderFulfillmentState) -> dict:
         return {"trace": ["validate_order"]}
 
+    @traced("operations.fetch_inventory")
     def fetch_inventory(state: OrderFulfillmentState) -> dict:
         checks = []
         for line in state["order"].lines:
@@ -41,6 +44,7 @@ def build_order_fulfillment_graph(inventory_gateway: InventoryGateway):
             "trace": [*state.get("trace", []), "fetch_inventory"],
         }
 
+    @traced("operations.plan_operation")
     def plan_operation(state: OrderFulfillmentState) -> dict:
         checks = state["inventory_checks"]
         shortages = [check for check in checks if check.shortage > 0]
@@ -67,6 +71,7 @@ def build_order_fulfillment_graph(inventory_gateway: InventoryGateway):
             "trace": [*state.get("trace", []), "plan_operation"],
         }
 
+    @traced("operations.require_human_review")
     def require_human_review(state: OrderFulfillmentState) -> dict:
         return {"trace": [*state.get("trace", []), "require_human_review"]}
 

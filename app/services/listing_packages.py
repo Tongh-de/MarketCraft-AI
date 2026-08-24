@@ -27,6 +27,7 @@ from app.services.poster_projects import (
     get_poster_project_service,
 )
 from app.skills.registry import SkillRegistry, get_skill_registry
+from app.telemetry import traced
 
 
 class ListingPackageNotFoundError(Exception):
@@ -60,6 +61,7 @@ class ListingPackageService:
             "listing_package", str(package.package_id), package.model_dump(mode="json")
         )
 
+    @traced("listing.package.create")
     def create(self, request: ListingPackageRequest) -> ProductListingPackage:
         try:
             creation_task = self.creation_service.get(request.creation_task_id)
@@ -117,6 +119,7 @@ class ListingPackageService:
         ]
         return sorted(packages, key=lambda item: item.updated_at, reverse=True)[:limit]
 
+    @traced("listing.package.submit_review")
     def submit_review(self, package_id: UUID, actor: str) -> ProductListingPackage:
         package = self.get(package_id)
         if package.status != ListingStatus.DRAFT:
@@ -129,6 +132,7 @@ class ListingPackageService:
         self._save(package)
         return package
 
+    @traced("listing.package.decide")
     def decide(
         self, package_id: UUID, request: ListingDecisionRequest
     ) -> ProductListingPackage:
@@ -158,6 +162,7 @@ class ListingPackageService:
         self._save(package)
         return package
 
+    @traced("listing.package.publish")
     def publish(
         self, package_id: UUID, request: ListingPublishRequest
     ) -> ListingPublishBatchResult:

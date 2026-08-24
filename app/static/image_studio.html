@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MarketCraft AI · 文生图</title>
+    <link rel="stylesheet" href="/static/studio.css" />
+    <link rel="stylesheet" href="/static/embed.css" />
+    <link rel="stylesheet" href="/static/image_studio.css?v=clean-image-1" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <main class="main-content image-main">
+        <header class="topbar">
+          <div>
+            <div class="eyebrow">TEXT TO IMAGE</div>
+            <h1>文生图</h1>
+            <p>输入一句提示词，直接生成图片。</p>
+          </div>
+          <div class="live-badges">
+            <span>通义万相</span>
+            <span><i class="pulse"></i>REAL IMAGE API</span>
+          </div>
+        </header>
+
+        <section class="image-lab">
+          <article class="panel prompt-panel">
+            <div class="panel-heading">
+              <div><div class="eyebrow">PROMPT</div><h2>提示词</h2></div>
+              <span class="mode-chip">WANX</span>
+            </div>
+            <form id="imageForm">
+              <label>
+                <span>描述你要生成的图片</span>
+                <textarea name="prompt" required>电商海报，一只白色不锈钢保温杯，干净浅色背景，柔和自然光，居中构图，适合小红书风格，画面简洁高级，不要文字，不要水印</textarea>
+              </label>
+              <div class="form-row">
+                <label><span>尺寸</span><select name="size"><option value="1280x1280">1280 × 1280</option><option value="1024x1024">1024 × 1024</option><option value="1080x1440">1080 × 1440</option><option value="1242x1660">1242 × 1660</option></select></label>
+                <label><span>质量</span><select name="quality"><option value="medium">Medium</option><option value="high">High</option><option value="auto">Auto</option></select></label>
+              </div>
+              <div class="quick-prompts">
+                <button type="button" data-prompt="电商海报，一只白色不锈钢保温杯，干净浅色背景，柔和自然光，居中构图，适合小红书风格，画面简洁高级，不要文字，不要水印">保温杯海报</button>
+                <button type="button" data-prompt="高端女装夹克商品图，城市通勤风，米色背景，柔和棚拍光，真实摄影质感，干净构图，不要文字，不要水印">女装夹克</button>
+                <button type="button" data-prompt="跨境电商主图，一款便携咖啡杯，极简白色背景，产品居中，高清商业摄影，阴影自然，不要文字，不要水印">平台主图</button>
+              </div>
+              <button class="button primary full" id="generateImage" type="submit">生成图片</button>
+            </form>
+          </article>
+
+          <article class="panel image-panel">
+            <div class="panel-heading">
+              <div><div class="eyebrow">RESULT</div><h2>生成结果</h2></div>
+              <span class="status-chip" id="imageStatus">等待生成</span>
+            </div>
+            <div class="image-stage">
+              <div class="empty-result" id="emptyImage">
+                <div class="empty-spark">◧</div>
+                <h3>生成结果会显示在这里</h3>
+                <p>点击左侧按钮后，等待十几秒即可看到图片。</p>
+              </div>
+              <img id="resultImage" alt="AI 生成图片" hidden />
+            </div>
+            <div class="image-actions">
+              <a class="button ghost disabled" id="downloadImage">下载 PNG</a>
+            </div>
+            <div class="trace-panel-mini">
+              <div class="eyebrow">TRACE</div>
+              <h3>生成链路追踪</h3>
+              <ol id="imageTrace">
+                <li class="pending">等待提交提示词</li>
+              </ol>
+            </div>
+          </article>
+        </section>
+      </main>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="/static/embed.js" defer></script>
+    <script src="/static/image_studio.js?v=clean-image-1" defer></script>
+  </body>
+</html>

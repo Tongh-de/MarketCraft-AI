@@ -23,6 +23,7 @@ from app.services.commerce_adapters import (
     OperationsNotifier,
 )
 from app.services.persistence import JsonStateStore, get_state_store
+from app.telemetry import traced
 from app.workflows.order_fulfillment import build_order_fulfillment_graph
 
 
@@ -64,6 +65,7 @@ class OrderOperationsService:
     def upsert_platform_order(self, order: CommerceOrder) -> CommerceOrder:
         return self.platform_gateway.upsert_order(order)
 
+    @traced("operations.platform_order.process")
     def process_platform_order(
         self,
         channel: SalesChannel,
@@ -83,6 +85,7 @@ class OrderOperationsService:
             )
         )
 
+    @traced("operations.order.process")
     def process(self, request: OrderProcessRequest) -> OrderOperationRun:
         cached = self.state_store.get(
             "order_operation_idempotency", request.idempotency_key
@@ -161,6 +164,7 @@ class OrderOperationsService:
             reverse=True,
         )[:limit]
 
+    @traced("operations.order.decide")
     def decide(
         self, run_id: UUID, request: OperationDecisionRequest
     ) -> OrderOperationRun:
@@ -190,6 +194,7 @@ class OrderOperationsService:
         self._save(run)
         return run
 
+    @traced("operations.order.execute")
     def execute(self, run_id: UUID, actor: str) -> OrderOperationRun:
         run = self.get(run_id)
         if run.status in {OperationStatus.COMPLETED, OperationStatus.PARTIAL_FAILED}:

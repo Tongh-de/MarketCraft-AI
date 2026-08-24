@@ -1,11 +1,14 @@
 import json
+import re
 from abc import ABC, abstractmethod
+from typing import TypeVar
 
 from openai import OpenAI
 from pydantic import BaseModel, Field
 
 from app.core.config import Settings, get_settings
 from app.domain.models import CampaignRequest, Platform, PlatformCopy
+from app.telemetry import traced
 
 
 class _SellingPointOutput(BaseModel):
@@ -14,6 +17,17 @@ class _SellingPointOutput(BaseModel):
 
 class _PlatformCopyOutput(BaseModel):
     copies: list[PlatformCopy]
+
+
+T = TypeVar("T", bound=BaseModel)
+
+
+def _parse_json_model(content: str, model_type: type[T]) -> T:
+    text = content.strip()
+    fenced = re.match(r"^```(?:json)?\s*(.*?)\s*```$", text, re.DOTALL)
+    if fenced:
+        text = fenced.group(1).strip()
+    return model_type.model_validate_json(text)
 
 
 class ContentGenerator(ABC):
@@ -108,6 +122,10 @@ class OpenAIContentGenerator(ContentGenerator):
         )
 
     def extract_selling_points(self, request: CampaignRequest) -> list[str]:
+        return self._extract_selling_points(request)
+
+    @traced("llm.openai.extract_selling_points", run_type="llm")
+    def _extract_selling_points(self, request: CampaignRequest) -> list[str]:
         response = self.client.responses.parse(
             model=self.settings.openai_model,
             input=[
@@ -131,6 +149,15 @@ class OpenAIContentGenerator(ContentGenerator):
         return parsed.selling_points
 
     def generate_platform_copies(
+        self,
+        request: CampaignRequest,
+        selling_points: list[str],
+        brand_context: list[str],
+    ) -> list[PlatformCopy]:
+        return self._generate_platform_copies(request, selling_points, brand_context)
+
+    @traced("llm.openai.generate_platform_copies", run_type="llm")
+    def _generate_platform_copies(
         self,
         request: CampaignRequest,
         selling_points: list[str],
@@ -178,8 +205,116 @@ class OpenAIContentGenerator(ContentGenerator):
         )
 
 
+class OpenAICompatibleContentGenerator(ContentGenerator):
+    """Provider for OpenAI-compatible Chat Completions APIs such as Qwen/DashScope."""
+
+    def __init__(self, settings: Settings) -> None:
+        if not settings.openai_api_key:
+            raise ValueError("OPENAI_API_KEY is required when GENERATION_MODE=openai_compatible")
+        if not settings.openai_base_url:
+            raise ValueError("OPENAI_BASE_URL is required when GENERATION_MODE=openai_compatible")
+        self.settings = settings
+        self.client = OpenAI(
+            api_key=settings.openai_api_key,
+            base_url=settings.openai_base_url,
+            timeout=settings.openai_timeout_seconds,
+        )
+
+    def _json_completion(self, system: str, payload: object, model_type: type[T]) -> T:
+        schema = model_type.model_json_schema()
+        response = self.client.chat.completions.create(
+            model=self.settings.openai_model,
+            messages=[
+                {
+                    "role": "system",
+                    "content": (
+                        f"{system}\n"
+                        "只返回一个合法 JSON 对象，不要 Markdown，不要解释文字。"
+                        f"JSON 必须符合这个 Schema：{json.dumps(schema, ensure_ascii=False)}"
+                    ),
+                },
+                {
+                    "role": "user",
+                    "content": (
+                        payload
+                        if isinstance(payload, str)
+                        else json.dumps(payload, ensure_ascii=False)
+                    ),
+                },
+            ],
+            response_format={"type": "json_object"},
+            temperature=0.4,
+        )
+        content = response.choices[0].message.content
+        if not content:
+            raise RuntimeError("compatible model returned no content")
+        return _parse_json_model(content, model_type)
+
+    def extract_selling_points(self, request: CampaignRequest) -> list[str]:
+        return self._extract_selling_points(request)
+
+    @traced("llm.compatible.extract_selling_points", run_type="llm")
+    def _extract_selling_points(self, request: CampaignRequest) -> list[str]:
+        parsed = self._json_completion(
+            "你是电商商品策略师。只根据输入事实提取1到5条可验证卖点，禁止补充不存在的功效、参数或承诺。",
+            request.product.model_dump(mode="json", exclude={"image_urls"}),
+            _SellingPointOutput,
+        )
+        return parsed.selling_points
+
+    def generate_platform_copies(
+        self,
+        request: CampaignRequest,
+        selling_points: list[str],
+        brand_context: list[str],
+    ) -> list[PlatformCopy]:
+        return self._generate_platform_copies(request, selling_points, brand_context)
+
+    @traced("llm.compatible.generate_platform_copies", run_type="llm")
+    def _generate_platform_copies(
+        self,
+        request: CampaignRequest,
+        selling_points: list[str],
+        brand_context: list[str],
+    ) -> list[PlatformCopy]:
+        payload = {
+            "request": request.model_dump(mode="json"),
+            "selling_points": selling_points,
+            "brand_context": brand_context,
+        }
+        parsed = self._json_completion(
+            (
+                "你是电商内容运营。为每个指定平台各生成一条文案，必须遵守品牌规则和合规限制。"
+                "copies 数组必须且只能覆盖 request.platforms 中的平台；platform 字段必须原样使用"
+                "这些英文枚举值，例如 xiaohongshu、douyin、taobao、jd，禁止翻译或改写。"
+            ),
+            payload,
+            _PlatformCopyOutput,
+        )
+        expected = set(request.platforms)
+        actual = {copy.platform for copy in parsed.copies}
+        if actual != expected:
+            raise RuntimeError("model output does not cover exactly the requested platforms")
+        return parsed.copies
+
+    def generate_poster_prompt(
+        self, request: CampaignRequest, selling_points: list[str]
+    ) -> str:
+        product = request.product
+        return (
+            f"Create a polished e-commerce product poster for {product.name}. "
+            f"Category: {product.category}. Audience: {product.target_audience}. "
+            f"Tone: {request.tone.value}. Verified selling points: "
+            f"{' | '.join(selling_points[:3])}. Keep the product visually accurate, "
+            "use a clean commercial composition, reserve safe areas for editable title and price, "
+            "and do not invent logos, certificates, parameters, or product features."
+        )
+
+
 def get_generator() -> ContentGenerator:
     settings = get_settings()
     if settings.generation_mode == "openai":
         return OpenAIContentGenerator(settings)
+    if settings.generation_mode == "openai_compatible":
+        return OpenAICompatibleContentGenerator(settings)
     return MockContentGenerator()

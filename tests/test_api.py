@@ -27,6 +27,7 @@ def test_dashboard_and_static_assets_are_served() -> None:
 def test_unified_product_shell_and_extension_assets_are_served() -> None:
     page = client.get("/app")
     stylesheet = client.get("/static/app_shell.css")
+    agent_stylesheet = client.get("/static/app_shell_agent.css")
     script = client.get("/static/app_shell.js")
     embed_stylesheet = client.get("/static/embed.css")
     embed_script = client.get("/static/embed.js")
@@ -35,8 +36,9 @@ def test_unified_product_shell_and_extension_assets_are_served() -> None:
     assert "AI 电商工作台" in page.text
     assert "Skill 插件" in page.text
     assert "外部服务" in page.text
-    assert "当前只生成执行计划" in page.text
+    assert "和 MarketCraft AI 对话" in page.text
     assert stylesheet.status_code == 200
+    assert agent_stylesheet.status_code == 200
     assert script.status_code == 200
     assert embed_stylesheet.status_code == 200
     assert embed_script.status_code == 200

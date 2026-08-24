@@ -17,7 +17,9 @@ from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
 from app.core.config import get_settings
 from app.observability import prometheus_middleware
+from app.telemetry import configure_langsmith
 
+configure_langsmith()
 settings = get_settings()
 static_dir = Path(__file__).parent / "static"
 upload_dir = Path(settings.upload_dir).resolve()
@@ -62,6 +64,11 @@ def studio() -> FileResponse:
     return FileResponse(static_dir / "studio.html")
 
 
+@app.get("/campaign-studio", include_in_schema=False)
+def campaign_studio() -> FileResponse:
+    return FileResponse(static_dir / "campaign_studio.html")
+
+
 @app.get("/competitors", include_in_schema=False)
 def competitors() -> FileResponse:
     return FileResponse(static_dir / "competitors.html")
@@ -70,6 +77,11 @@ def competitors() -> FileResponse:
 @app.get("/poster-editor", include_in_schema=False)
 def poster_editor() -> FileResponse:
     return FileResponse(static_dir / "poster_editor.html")
+
+
+@app.get("/image-studio", include_in_schema=False)
+def image_studio() -> FileResponse:
+    return FileResponse(static_dir / "image_studio.html")
 
 
 @app.get("/listing-workbench", include_in_schema=False)

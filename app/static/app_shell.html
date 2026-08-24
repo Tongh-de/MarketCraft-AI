@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="MarketCraft AI 统一电商 Agent 工作台" />
     <title>MarketCraft AI · 统一工作台</title>
-    <link rel="stylesheet" href="/static/app_shell.css" />
+    <link rel="stylesheet" href="/static/app_shell.css?v=agent-runner-1" />
+    <link rel="stylesheet" href="/static/app_shell_agent.css?v=chat-window-1" />
   </head>
   <body>
     <div class="unified-shell">
@@ -14,6 +15,8 @@
         <nav class="unified-nav" aria-label="产品模块">
           <button class="active" data-view="home" type="button"><i>⌂</i><span>AI 工作台</span></button>
           <div class="nav-label">创作与发布</div>
+          <button data-view="campaign" type="button"><i>✎</i><span>营销文案</span></button>
+          <button data-view="image" type="button"><i>◧</i><span>文生图</span></button>
           <button data-view="studio" type="button"><i>✦</i><span>商品创作</span></button>
           <button data-view="competitors" type="button"><i>◉</i><span>竞品分析</span></button>
           <button data-view="poster" type="button"><i>▣</i><span>海报设计</span></button>
@@ -35,17 +38,18 @@
 
         <section class="shell-view active" id="homeView">
           <article class="conversation-hero">
-            <div class="hero-copy"><span>MARKETCRAFT AGENT</span><h2>今天想让 AI 帮你完成什么？</h2><p>从一张商品图开始，Agent 可以规划素材生成、竞品分析、海报、审核上架和数据复盘。涉及外部写操作时会停下来等待你确认。</p></div>
-            <form class="command-composer" id="commandForm"><textarea id="commandInput" placeholder="例如：上传这件夹克，生成模特试穿图和 TikTok 海报，然后准备上架草稿……" required></textarea><div><span>当前只生成执行计划，不直接调用外部写操作</span><button type="submit">发送给 Agent　→</button></div></form>
-            <div class="prompt-suggestions"><button data-prompt="生成这件商品的多角度图和模特试穿效果">生成商品素材</button><button data-prompt="分析竞品图片并给出差异化海报方案">分析竞品</button><button data-prompt="把已完成的商品草稿提交审核并准备上架">准备上架</button><button data-prompt="读取三个平台的数据并给出优化建议">分析经营数据</button></div>
+            <div class="hero-copy"><span>MarketCraft Agent</span></div>
+            <div class="agent-chat" id="agentChat"></div>
+            <form class="command-composer" id="commandForm">
+              <textarea id="commandInput" placeholder="和 MarketCraft AI 对话，或者直接说你要生成什么……" required></textarea>
+              <div>
+                <span>支持闲聊、文案生成和文生图</span>
+                <button class="send-button" type="submit" aria-label="发送">↑</button>
+              </div>
+            </form>
           </article>
 
           <section class="agent-plan" id="agentPlan" hidden></section>
-
-          <section class="home-grid">
-            <article class="home-panel flow-panel"><div class="panel-title"><div><span class="shell-eyebrow">END-TO-END WORKFLOW</span><h3>完整商品增长链路</h3></div><b>7 MODULES</b></div><div class="flow-list"><button data-open="studio"><i>01</i><strong>商品素材</strong><small>多角度图与模特试穿</small></button><button data-open="competitors"><i>02</i><strong>竞品洞察</strong><small>视觉拆解与原创 Brief</small></button><button data-open="poster"><i>03</i><strong>海报设计</strong><small>可编辑图层与导出</small></button><button data-open="listing"><i>04</i><strong>审核上架</strong><small>平台草稿与四眼审批</small></button><button data-open="performance"><i>05</i><strong>数据回流</strong><small>指标分析与优化建议</small></button></div></article>
-            <article class="home-panel system-panel"><div class="panel-title"><div><span class="shell-eyebrow">EXTENSIBLE RUNTIME</span><h3>可插拔能力</h3></div></div><div class="system-stats"><button data-open="skills"><strong id="homeSkillCount">—</strong><span>Skill 插件</span><small>可创建、编辑、启停</small></button><button data-open="services"><strong id="homeServiceCount">—</strong><span>外部服务</span><small>能力映射与密钥引用</small></button><button data-open="operations"><strong>4-EYES</strong><span>写操作审批</span><small>提交人与审核人分离</small></button></div><div class="system-boundary"><i></i><p><strong>执行边界已启用</strong>自定义 Skill 先生成工具调用计划；真实发布、库存和履约操作仍需人工批准。</p></div></article>
-          </section>
         </section>
 
         <section class="shell-view frame-view" id="frameView"><iframe id="moduleFrame" title="MarketCraft 业务模块"></iframe></section>
@@ -62,6 +66,6 @@
       </main>
     </div>
     <div class="shell-toast" id="shellToast" role="status" aria-live="polite"></div>
-    <script src="/static/app_shell.js" defer></script>
+    <script src="/static/app_shell.js?v=chat-window-1" defer></script>
   </body>
 </html>

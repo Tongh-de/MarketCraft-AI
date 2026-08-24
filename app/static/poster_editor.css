@@ -5,6 +5,9 @@
 .canvas-panel { overflow: hidden; }.canvas-shell { display: grid; min-height: 660px; padding: 24px; place-items: center; background: #e8ece8; }
 .poster-canvas { position: relative; overflow: hidden; width: min(100%, 480px); aspect-ratio: 3/4; background: linear-gradient(135deg,#f3f0e8,#fff); border-radius: 10px; box-shadow: 0 22px 55px #263f3230; }
 .poster-canvas::after { position: absolute; inset: 3%; border: 1px solid #ffffff9c; border-radius: 8px; content: ""; pointer-events: none; }
+.ai-poster-background { position: absolute; inset: 0; z-index: 1; width: 100%; height: 100%; object-fit: cover; }
+.poster-canvas.has-ai-background .canvas-orb { display: none; }
+.poster-canvas.has-ai-background::before { position: absolute; inset: 0; z-index: 1; background: linear-gradient(90deg,#ffffffb8 0%,#ffffff6f 42%,#ffffff18 100%); content: ""; pointer-events: none; }
 .canvas-orb { position: absolute; top: -8%; right: -12%; width: 52%; aspect-ratio: 1; background: #1760441a; border-radius: 50%; }
 #canvasProduct { position: absolute; z-index: 2; left: 70%; top: 58%; width: 58%; height: 48%; object-fit: contain; transform: translate(-50%,-50%); filter: drop-shadow(0 14px 18px #173c2e20); }
 .canvas-copy { position: absolute; z-index: 3; left: 8%; top: 16%; width: 54%; color: #17211b; text-align: left; }.canvas-copy h3 { margin: 0; font-size: clamp(18px,2.3vw,34px); line-height: 1.2; }.canvas-copy p { margin: 10px 0 18px; opacity: .66; font-size: clamp(8px,.9vw,13px); line-height: 1.55; }.canvas-copy strong { display: block; margin-bottom: 14px; color: #176044; font-size: clamp(13px,1.5vw,23px); }.canvas-copy button { min-width: 32%; padding: 9px 16px; color: white; background: #176044; border: 0; border-radius: 999px; font-size: clamp(8px,.8vw,12px); font-weight: 700; }

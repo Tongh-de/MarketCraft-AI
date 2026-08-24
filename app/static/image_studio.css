@@ -1,0 +1,29 @@
+.image-main { width: 100%; min-height: 100vh; margin-left: 0; padding: 16px !important; }
+.image-main .topbar { display: none; }
+.image-main .topbar h1 { margin: 4px 0 2px; font-size: 30px; }
+.image-main .topbar p { font-size: 11px; }
+.image-lab { display: grid; grid-template-columns: 320px minmax(0,1fr); gap: 14px; align-items: stretch; height: calc(100vh - 32px); margin-top: 0; }
+.prompt-panel, .image-panel { min-height: 0; overflow: hidden; border-radius: 10px; }
+.prompt-panel { display: flex; flex-direction: column; }
+.prompt-panel .panel-heading, .image-panel .panel-heading { display: none; }
+.prompt-panel form { display: flex; flex: 1; flex-direction: column; gap: 12px; min-height: 0; padding: 14px; }
+.prompt-panel textarea { flex: 1; min-height: 190px; resize: none; }
+.quick-prompts { display: flex; flex-wrap: wrap; gap: 7px; }
+.quick-prompts button { min-height: 31px; padding: 0 10px; color: var(--green); background: #f3f8f4; border: 1px solid #cfe0d4; border-radius: 999px; cursor: pointer; font-size: 10px; }
+.image-panel { display: grid; grid-template-rows: minmax(0,1fr) auto; }
+.image-stage { position: relative; display: grid; min-height: 0; padding: 0; place-items: center; background: #dfe7e2; border-top: 1px solid var(--line); }
+.image-stage [hidden] { display: none !important; }
+#resultImage { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; background: #fff; border-radius: 0; box-shadow: none; }
+.image-stage .empty-result { display: grid; width: 100%; height: 100%; min-height: 420px; place-content: center; background: #dfe7e2; }
+.image-actions { display: flex; justify-content: center; padding: 10px 14px; border-top: 1px solid var(--line); }
+.button.disabled { opacity: .45; pointer-events: none; }
+.trace-panel-mini { display: none; }
+.trace-panel-mini h3 { margin: 5px 0 9px; font-size: 12px; }
+#imageTrace { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; margin: 0; padding: 0; list-style: none; }
+#imageTrace li { position: relative; min-height: 28px; padding: 7px 9px 7px 30px; color: #52635a; background: #f1f5f2; border: 1px solid #dfe8e1; border-radius: 7px; font-size: 9px; line-height: 1.35; }
+#imageTrace li::before { position: absolute; left: 10px; top: 9px; display: grid; width: 10px; height: 10px; place-items: center; border-radius: 50%; content: ""; }
+#imageTrace li.pending::before { background: #c5cec8; }
+#imageTrace li.running::before { background: #dca347; box-shadow: 0 0 0 4px #dca34722; }
+#imageTrace li.done::before { background: #3aa162; box-shadow: 0 0 0 4px #3aa16220; }
+#imageTrace li.failed::before { background: #b84c43; box-shadow: 0 0 0 4px #b84c4320; }
+@media(max-width:900px){.image-main{padding:14px!important}.image-lab{grid-template-columns:1fr;height:auto}.prompt-panel textarea{min-height:180px}.image-stage{min-height:480px}#imageTrace{grid-template-columns:1fr}}

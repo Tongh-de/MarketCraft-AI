@@ -6,7 +6,7 @@
     <meta name="description" content="MarketCraft AI 可编辑商品海报工作台" />
     <title>MarketCraft AI · AI 海报工作台</title>
     <link rel="stylesheet" href="/static/studio.css" />
-    <link rel="stylesheet" href="/static/poster_editor.css" />
+    <link rel="stylesheet" href="/static/poster_editor.css?v=wanx-1" />
     <link rel="stylesheet" href="/static/embed.css" />
   </head>
   <body>
@@ -50,6 +50,7 @@
               <label><span>设计风格</span><select name="style"><option value="clean">简洁 Clean</option><option value="premium">高级 Premium</option><option value="energetic">活力 Energetic</option><option value="lifestyle">生活方式 Lifestyle</option></select></label>
               <label><span>背景生成插件</span><select name="plugin" id="posterPlugin"></select></label>
               <button class="button primary full" id="generatePoster" type="submit">✦ 生成可编辑海报</button>
+              <button class="button ghost full" id="generateAiImage" type="button">生成真实背景图</button>
             </form>
           </article>
 
@@ -58,6 +59,7 @@
               <div class="panel-heading"><div><div class="eyebrow">LIVE CANVAS</div><h2>海报画布</h2></div><span class="status-chip" id="canvasSize">1242 × 1660</span></div>
               <div class="canvas-shell">
                 <div class="poster-canvas" id="posterCanvas">
+                  <img id="aiPosterBackground" class="ai-poster-background" alt="AI 生成海报背景" hidden />
                   <div class="canvas-orb"></div>
                   <img id="canvasProduct" alt="海报商品" hidden />
                   <div class="canvas-copy" id="canvasCopy"><h3 id="canvasTitle">轻盈通勤，自在有型</h3><p id="canvasSubtitle">柔软面料 · 简约版型 · 日常百搭</p><strong id="canvasPrice">新品价 ¥399</strong><button id="canvasCta" type="button">立即查看</button></div>
@@ -83,6 +85,6 @@
     <canvas id="exportCanvas" hidden></canvas>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="/static/embed.js" defer></script>
-    <script src="/static/poster_editor.js" defer></script>
+    <script src="/static/poster_editor.js?v=wanx-1" defer></script>
   </body>
 </html>
