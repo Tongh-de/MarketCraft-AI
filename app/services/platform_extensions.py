@@ -39,6 +39,12 @@ BUILT_IN_TOOL_BINDINGS = {
     "product-listing-package": ["listing.create_package", "listing.submit_review"],
     "commerce-performance-optimization": ["performance.load", "performance.analyze"],
     "monthly-outfit-advisor": ["agent.intent", "fashion.calendar"],
+    "wechat-official-account-publishing": [
+        "wechat.upload_cover",
+        "wechat.create_draft",
+        "wechat.request_review",
+        "wechat.publish",
+    ],
 }
 
 
@@ -73,6 +79,27 @@ class SkillPluginService:
                 built_in=True,
                 editable=False,
             )
+        manifests["wechat-official-account-publishing"] = SkillPluginManifest(
+            plugin_id="wechat-official-account-publishing",
+            name="微信公众号发布 Skill",
+            description="上传封面、创建公众号草稿，经四眼审核后提交发布并查询结果。",
+            version="1.0.0",
+            status=SkillPluginStatus.ENABLED,
+            instructions="先生成公众号草稿，必须由不同用户审核通过，之后才允许提交发布。",
+            triggers=["发布到公众号", "公众号推送", "创建公众号草稿"],
+            capabilities=[
+                "material_upload",
+                "draft_create",
+                "publish_submit",
+                "publish_status_read",
+            ],
+            tool_bindings=BUILT_IN_TOOL_BINDINGS[
+                "wechat-official-account-publishing"
+            ],
+            risk_level=SkillRiskLevel.REVIEW_REQUIRED,
+            built_in=True,
+            editable=False,
+        )
         return manifests
 
     @staticmethod
@@ -230,6 +257,12 @@ BUILT_IN_SERVICES = [
     ("shopify.mock", "Shopify", ExternalServiceKind.ECOMMERCE_PLATFORM, ["listing_publish", "performance_read"]),
     ("erp.mock", "ERP 库存系统", ExternalServiceKind.BUSINESS_SYSTEM, ["inventory_read", "inventory_reserve", "replenishment"]),
     ("feishu.mock", "飞书审批", ExternalServiceKind.NOTIFICATION, ["approval_notification"]),
+    (
+        "wechat-official-account.mock",
+        "微信公众号",
+        ExternalServiceKind.NOTIFICATION,
+        ["material_upload", "draft_create", "publish_submit", "publish_status_read"],
+    ),
 ]
 
 

@@ -43,6 +43,12 @@ class Settings(BaseSettings):
     feishu_webhook_secret: str | None = None
     feishu_approval_base_url: str | None = None
     feishu_request_timeout_seconds: float = 10
+    wechat_mode: Literal["mock", "live"] = "mock"
+    wechat_app_id: str | None = None
+    wechat_app_secret: str | None = None
+    wechat_api_base: str = "https://api.weixin.qq.com"
+    wechat_timeout_seconds: float = 20
+    wechat_max_material_bytes: int = 10_485_760
 
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 

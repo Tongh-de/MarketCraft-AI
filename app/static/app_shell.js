@@ -38,6 +38,7 @@ const views = {
   competitors: { title: "竞品视觉分析", eyebrow: "COMPETITOR INTELLIGENCE", description: "拆解竞品视觉规律，形成原创差异化创作方案。", src: "/competitors?embed=1" },
   poster: { title: "AI 海报设计", eyebrow: "EDITABLE POSTER STUDIO", description: "在可编辑画布中调整商品、文案、颜色、尺寸和图层。", src: "/poster-editor?embed=1" },
   listing: { title: "多平台审核与上架", eyebrow: "LISTING ORCHESTRATION", description: "生成平台草稿，完成人工审核后执行幂等发布。", src: "/listing-workbench?embed=1" },
+  wechat: { title: "微信公众号发布", eyebrow: "WECHAT CONTENT DISTRIBUTION", description: "把商品内容整理成公众号草稿，经人工审核后提交发布。", src: "/wechat-publisher?embed=1" },
   performance: { title: "经营数据与 AI 优化", eyebrow: "PERFORMANCE FEEDBACK LOOP", description: "回流曝光、点击、转化、广告、退货和库存指标。", src: "/performance-insights?embed=1" },
   operations: { title: "订单、库存与履约", eyebrow: "COMMERCE OPERATIONS", description: "处理平台订单、库存证据、人工审批和履约执行。", src: "/dashboard?embed=1" },
   skills: { title: "Skill 插件中心", eyebrow: "EDITABLE SKILL REGISTRY", description: "创建、自动修订、启停并按需调用可插拔业务能力。" },
@@ -124,6 +125,7 @@ const moduleSteps = {
   competitors: "分析竞品视觉并生成差异化 Brief",
   poster: "创建可编辑海报草稿",
   listing: "生成平台草稿并停在人工审核",
+  wechat: "整理公众号图文并创建待审核草稿",
   performance: "读取经营指标并生成只读优化报告",
   operations: "读取订单与库存并生成运营建议",
 };
@@ -136,6 +138,7 @@ function inferModules(prompt) {
   if (/多角度|模特|素材|试穿/.test(prompt)) candidates.push("studio");
   if (/竞品|对标/.test(prompt)) candidates.push("competitors");
   if (/上架|发布|listing/i.test(prompt)) candidates.push("listing");
+  if (/公众号|微信推送|wechat/i.test(prompt)) candidates.unshift("wechat");
   if (/数据|曝光|点击|转化|销量|roas|优化/i.test(prompt)) candidates.push("performance");
   if (/订单|库存|履约|补货/.test(prompt)) candidates.push("operations");
   return [...new Set(candidates.length ? candidates : ["campaign"])];
@@ -270,6 +273,16 @@ const agentSkills = {
     steps: [
       "\u8bc6\u522b\u5e73\u53f0\u4e0a\u67b6\u9700\u6c42",
       "\u51c6\u5907\u8fdb\u5165\u5ba1\u6838\u4e0e\u4e0a\u67b6\u6a21\u5757",
+    ],
+  },
+  wechat: {
+    label: "微信公众号发布 Skill",
+    badge: "WECHAT PUBLISHING",
+    steps: [
+      "识别公众号内容发布意图",
+      "整理图文、封面和摘要",
+      "创建公众号草稿并等待人工审核",
+      "审核通过后提交发布",
     ],
   },
   performance: {

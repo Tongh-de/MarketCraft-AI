@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>公众号发布 · MarketCraft AI</title>
+    <link rel="stylesheet" href="/static/embed.css" />
+    <link rel="stylesheet" href="/static/wechat_publisher.css" />
+  </head>
+  <body>
+    <main class="wechat-page">
+      <section class="wechat-hero">
+        <div>
+          <span>WECHAT OFFICIAL ACCOUNT</span>
+          <h1>公众号内容发布</h1>
+          <p>把商品文案与海报整理成公众号图文，先进入草稿箱，经人工审核后再提交发布。</p>
+        </div>
+        <div class="connection-card">
+          <i id="connectionDot"></i>
+          <div><small>当前连接</small><strong id="connectionMode">正在检查…</strong><p id="connectionMessage"></p></div>
+        </div>
+      </section>
+
+      <section class="workflow-strip" aria-label="发布步骤">
+        <div class="active"><b>01</b><span>上传封面</span></div>
+        <div><b>02</b><span>创建草稿</span></div>
+        <div><b>03</b><span>人工审核</span></div>
+        <div><b>04</b><span>提交发布</span></div>
+      </section>
+
+      <section class="publisher-grid">
+        <form class="editor-card" id="draftForm">
+          <div class="card-heading"><div><span>ARTICLE COMPOSER</span><h2>编辑公众号图文</h2></div><em>不会自动发布</em></div>
+          <label><span>标题</span><input name="title" maxlength="64" value="新品上线｜用 AI 完成一整套电商内容创作" required /></label>
+          <div class="two-column">
+            <label><span>作者</span><input name="author" value="MarketCraft 运营团队" /></label>
+            <label><span>创建人</span><input name="actor" value="content-editor" required /></label>
+          </div>
+          <label><span>摘要</span><textarea name="digest" maxlength="120">从一张商品图到多角度素材、模特试穿、海报和公众号内容，查看完整创作链路。</textarea></label>
+          <label><span>正文（支持 HTML）</span><textarea class="content-editor" name="content" required><h2>新品内容已准备完成</h2><p>MarketCraft AI 已根据商品信息生成视觉素材和营销文案。</p><p><strong>本期亮点：</strong></p><ul><li>多角度商品展示</li><li>模特试穿效果</li><li>原创营销海报</li></ul><p>发布前仍由运营人员完成最终审核。</p></textarea></label>
+          <label class="upload-zone" id="uploadZone"><input id="coverFile" type="file" accept="image/*" required /><span>＋</span><strong>上传公众号封面</strong><small>先上传到素材库，系统将自动填入 Media ID</small></label>
+          <div class="media-result" id="mediaResult" hidden><span>封面已上传</span><code id="mediaId"></code></div>
+          <button class="primary-button" id="createDraft" type="submit" disabled>创建公众号草稿　→</button>
+        </form>
+
+        <aside class="queue-card">
+          <div class="card-heading"><div><span>REVIEW & PUBLISH</span><h2>草稿与发布队列</h2></div><button id="refreshDrafts" type="button">刷新</button></div>
+          <div class="boundary-note"><i>✓</i><p><strong>四眼审核已开启</strong>草稿创建人与审核人必须不同；只有审核通过的内容才能提交公众号发布。</p></div>
+          <div class="draft-list" id="draftList"><p class="empty-state">正在读取草稿…</p></div>
+        </aside>
+      </section>
+    </main>
+    <div class="wechat-toast" id="toast" role="status"></div>
+    <script src="/static/wechat_publisher.js" defer></script>
+  </body>
+</html>
+

@@ -324,3 +324,8 @@ The broader test suite covers campaign workflow, product catalog versions, retri
 | 9 | Performance feedback and read-only recommendations |
 | 10 | Unified AI workspace, skill registry and external service hub |
 
+
+
+## 微信公众号发布
+
+从 v0.11.0 起，工作台支持封面素材上传、公众号草稿、四眼审核、提交发布与状态查询。默认使用 Mock 模式，不会访问微信服务器；真实接入请参考 [`docs/WECHAT_OFFICIAL_ACCOUNT.md`](docs/WECHAT_OFFICIAL_ACCOUNT.md)。

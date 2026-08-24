@@ -15,6 +15,7 @@ from app.api.v1.platform_extensions import router as platform_extensions_router
 from app.api.v1.poster_projects import router as poster_projects_router
 from app.api.v1.posters import router as posters_router
 from app.api.v1.products import router as products_router
+from app.api.v1.wechat import router as wechat_router
 from app.core.config import get_settings
 from app.observability import prometheus_middleware
 from app.telemetry import configure_langsmith
@@ -26,7 +27,7 @@ upload_dir = Path(settings.upload_dir).resolve()
 upload_dir.mkdir(parents=True, exist_ok=True)
 app = FastAPI(
     title=settings.app_name,
-    version="0.10.0",
+    version="0.11.0",
     description="Cross-border e-commerce content and operations Agent API",
 )
 app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -41,6 +42,7 @@ app.include_router(platform_extensions_router, prefix="/api/v1")
 app.include_router(posters_router, prefix="/api/v1")
 app.include_router(poster_projects_router, prefix="/api/v1")
 app.include_router(products_router, prefix="/api/v1")
+app.include_router(wechat_router, prefix="/api/v1")
 app.middleware("http")(prometheus_middleware)
 
 
@@ -92,6 +94,11 @@ def listing_workbench() -> FileResponse:
 @app.get("/performance-insights", include_in_schema=False)
 def performance_insights() -> FileResponse:
     return FileResponse(static_dir / "performance_insights.html")
+
+
+@app.get("/wechat-publisher", include_in_schema=False)
+def wechat_publisher() -> FileResponse:
+    return FileResponse(static_dir / "wechat_publisher.html")
 
 
 @app.get("/health", tags=["system"])
