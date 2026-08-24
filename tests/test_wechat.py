@@ -11,6 +11,10 @@ def test_wechat_mock_draft_review_and_publish_flow() -> None:
     assert configuration.json()["mode"] == "mock"
     assert configuration.json()["configured"] is True
 
+    health = client.post("/api/v1/wechat/health")
+    assert health.status_code == 200
+    assert health.json()["connected"] is True
+
     material = client.post(
         "/api/v1/wechat/materials/images",
         files={"file": ("cover.png", b"fake-png", "image/png")},
@@ -70,4 +74,3 @@ def test_wechat_reject_requires_reason() -> None:
         json={"reviewer": "reviewer-b", "action": "reject"},
     )
     assert response.status_code == 422
-

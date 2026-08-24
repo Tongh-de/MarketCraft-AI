@@ -70,4 +70,10 @@ echo "WeChat configuration (secrets are never returned):"
 curl --fail --silent --show-error http://127.0.0.1/api/v1/wechat/configuration
 echo
 
+echo "WeChat live connectivity:"
+curl --fail --silent --show-error \
+  --request POST \
+  http://127.0.0.1/api/v1/wechat/health
+echo
+
 echo "Live WeChat deployment completed."

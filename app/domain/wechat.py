@@ -97,3 +97,9 @@ class WechatConfigurationStatus(BaseModel):
     api_base: str
     message: str
 
+
+class WechatConnectionHealth(BaseModel):
+    mode: WechatMode
+    connected: bool
+    message: str
+    checked_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

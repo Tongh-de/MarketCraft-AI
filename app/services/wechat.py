@@ -12,6 +12,7 @@ from app.core.config import Settings, get_settings
 from app.domain.models import AuditEvent
 from app.domain.wechat import (
     WechatConfigurationStatus,
+    WechatConnectionHealth,
     WechatDraftCreateRequest,
     WechatDraftRecord,
     WechatDraftStatus,
@@ -140,6 +141,20 @@ class WechatOfficialAccountService:
             raise WechatConfigurationError(
                 "WECHAT_APP_ID and WECHAT_APP_SECRET are required in live mode"
             )
+
+    def check_health(self) -> WechatConnectionHealth:
+        if self.mode == WechatMode.MOCK:
+            return WechatConnectionHealth(
+                mode=self.mode,
+                connected=True,
+                message="Mock 公众号适配器可用；未访问微信服务器。",
+            )
+        self._token()
+        return WechatConnectionHealth(
+            mode=self.mode,
+            connected=True,
+            message="已成功获取微信 access_token，AppID、AppSecret 和 IP 白名单有效。",
+        )
 
     def _token(self) -> str:
         self._require_live_configuration()

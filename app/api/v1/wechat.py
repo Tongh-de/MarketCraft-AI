@@ -2,6 +2,7 @@ from fastapi import APIRouter, File, HTTPException, UploadFile, status
 
 from app.domain.wechat import (
     WechatConfigurationStatus,
+    WechatConnectionHealth,
     WechatDraftCreateRequest,
     WechatDraftRecord,
     WechatMaterialUploadResult,
@@ -35,6 +36,14 @@ def _raise_wechat_error(error: Exception) -> None:
 @router.get("/configuration", response_model=WechatConfigurationStatus)
 def get_configuration() -> WechatConfigurationStatus:
     return get_wechat_service().configuration_status()
+
+
+@router.post("/health", response_model=WechatConnectionHealth)
+def check_connection_health() -> WechatConnectionHealth:
+    try:
+        return get_wechat_service().check_health()
+    except (WechatConfigurationError, WechatApiError) as error:
+        _raise_wechat_error(error)
 
 
 @router.post(
@@ -101,4 +110,3 @@ def get_publication_status(publish_id: str) -> WechatPublicationStatus:
         return get_wechat_service().publication_status(publish_id)
     except (WechatConfigurationError, WechatApiError) as error:
         _raise_wechat_error(error)
-
