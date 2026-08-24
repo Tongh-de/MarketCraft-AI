@@ -63,15 +63,16 @@ docker compose "${COMPOSE_FILES[@]}" ps
 
 echo
 echo "Application health:"
-curl --fail --silent --show-error http://127.0.0.1/health
+curl --fail-with-body --silent --show-error http://127.0.0.1/health
 echo
 
 echo "WeChat configuration (secrets are never returned):"
-curl --fail --silent --show-error http://127.0.0.1/api/v1/wechat/configuration
+curl --fail-with-body --silent --show-error \
+  http://127.0.0.1/api/v1/wechat/configuration
 echo
 
 echo "WeChat live connectivity:"
-curl --fail --silent --show-error \
+curl --fail-with-body --silent --show-error \
   --request POST \
   http://127.0.0.1/api/v1/wechat/health
 echo
